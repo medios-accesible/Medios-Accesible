@@ -430,6 +430,16 @@
       box-shadow: 0 0 20px rgba(255,43,255,.25);
     }
 
+    .icon svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     .feature-card h3 {
       font-size: .7rem;
       line-height: 1.2;
@@ -838,8 +848,13 @@
           </article>
 
           <article class="feature-card">
-            <div class="icon">◎</div>
-            <h3>Digital Presence</h3>
+            <div class="icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 8h12l-1 12H7L6 8Z"></path>
+                <path d="M9 8V6a3 3 0 0 1 6 0v2"></path>
+              </svg>
+            </div>
+            <h3>E-Commerce Stores</h3>
           </article>
 
           <article class="feature-card">
