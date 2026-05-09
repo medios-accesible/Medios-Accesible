@@ -72,9 +72,15 @@ export default function AdminClientsPage() {
             <p>Open a client to manage their project and private messages.</p>
           </div>
 
-          <Link className="portal-link" href="/admin">
-            ← Admin Home
-          </Link>
+          <div className="portal-header-actions">
+            <Link className="portal-link" href="/">
+              Home
+            </Link>
+
+            <Link className="portal-link" href="/admin">
+              ← Admin
+            </Link>
+          </div>
         </header>
 
         <article className="portal-card">
