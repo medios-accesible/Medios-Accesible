@@ -33,6 +33,22 @@ type Message = {
   created_at: string;
 };
 
+type ProjectUpdate = {
+  id: string;
+  project_id: string;
+  title: string;
+  summary: string;
+  update_type: string;
+  current_stage: string | null;
+  progress_snapshot: number | null;
+  completed_work: string | null;
+  next_steps: string | null;
+  client_action_needed: string | null;
+  blockers: string | null;
+  estimated_completion: string | null;
+  created_at: string;
+};
+
 type DeveloperPresence = {
   id: string;
   is_logged_in: boolean | null;
@@ -52,6 +68,7 @@ export default function ClientMessagesPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [project, setProject] = useState<Project | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [projectUpdates, setProjectUpdates] = useState<ProjectUpdate[]>([]);
   const [messageBody, setMessageBody] = useState("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [developerAtDesk, setDeveloperAtDesk] = useState(false);
@@ -278,11 +295,78 @@ export default function ClientMessagesPage() {
 
               <div className={`developer-status-inline ${developerAtDesk ? "is-online" : "is-away"}`}>
                 <span className="developer-status-dot"></span>
-                <p>
-                  {developerAtDesk
-                    ? "Developer is currently at his desk. Message me here in the client portal."
-                    : "Developer is currently away from his desk. Please call or send email for a timely response."}
-                </p>
+
+                <div>
+                  <p>
+                    {developerAtDesk
+                      ? "Developer is currently at his desk. Message me here in the client portal."
+                      : "Developer is currently away from his desk. Please call or send email for a timely response."}
+                  </p>
+
+                  {!developerAtDesk && (
+                    <div className="developer-status-actions">
+                      <a href="tel:+17879074302">Call (787) 907-4302</a>
+                      <a href="mailto:mediosaccesible@gmail.com">Send Email</a>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="client-project-updates-panel">
+                <h3>Detailed Project Updates</h3>
+
+                {projectUpdates.length === 0 ? (
+                  <p>No detailed project updates have been posted yet.</p>
+                ) : (
+                  <div className="project-updates-list">
+                    {projectUpdates.map((update) => (
+                      <div className="project-update-item" key={update.id}>
+                        <div className="project-update-meta">
+                          <span>{update.update_type}</span>
+                          <time>{new Date(update.created_at).toLocaleDateString()}</time>
+                        </div>
+
+                        <h3>{update.title}</h3>
+                        <p>{update.summary}</p>
+
+                        {update.completed_work && (
+                          <div className="project-update-detail">
+                            <strong>Completed:</strong>
+                            <p>{update.completed_work}</p>
+                          </div>
+                        )}
+
+                        {update.next_steps && (
+                          <div className="project-update-detail">
+                            <strong>Next:</strong>
+                            <p>{update.next_steps}</p>
+                          </div>
+                        )}
+
+                        {update.client_action_needed && (
+                          <div className="project-update-detail highlight">
+                            <strong>Action needed from you:</strong>
+                            <p>{update.client_action_needed}</p>
+                          </div>
+                        )}
+
+                        {update.blockers && (
+                          <div className="project-update-detail warning">
+                            <strong>Blockers:</strong>
+                            <p>{update.blockers}</p>
+                          </div>
+                        )}
+
+                        {update.estimated_completion && (
+                          <div className="project-update-detail">
+                            <strong>Timing:</strong>
+                            <p>{update.estimated_completion}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="message-thread">
