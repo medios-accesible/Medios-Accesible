@@ -24,12 +24,21 @@ type ClientProject = {
   client_id: string;
 };
 
+type MessageNotification = {
+  id: string;
+  project_id: string;
+  sender_id: string;
+  read_at: string | null;
+};
+
 export default function AdminDashboardPage() {
   const router = useRouter();
 
   const [adminProfile, setAdminProfile] = useState<Profile | null>(null);
   const [clients, setClients] = useState<Profile[]>([]);
   const [projects, setProjects] = useState<ClientProject[]>([]);
+  const [unreadByClient, setUnreadByClient] = useState<Record<string, number>>({});
+  const [totalUnread, setTotalUnread] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -69,7 +78,36 @@ export default function AdminDashboardPage() {
         .select("id, title, status, stage, progress, plan, monthly_price, client_id")
         .order("created_at", { ascending: false });
 
-      setProjects((projectsData || []) as ClientProject[]);
+      const loadedProjects = (projectsData || []) as ClientProject[];
+      setProjects(loadedProjects);
+
+      const projectIds = loadedProjects.map((project) => project.id);
+      const nextUnreadByClient: Record<string, number> = {};
+
+      if (projectIds.length > 0) {
+        const { data: unreadData } = await supabase
+          .from("messages")
+          .select("id, project_id, sender_id, read_at")
+          .in("project_id", projectIds)
+          .is("read_at", null)
+          .neq("sender_id", userId);
+
+        const unreadMessages = (unreadData || []) as MessageNotification[];
+
+        unreadMessages.forEach((message) => {
+          const project = loadedProjects.find((item) => item.id === message.project_id);
+          if (!project) return;
+
+          nextUnreadByClient[project.client_id] =
+            (nextUnreadByClient[project.client_id] || 0) + 1;
+        });
+      }
+
+      setUnreadByClient(nextUnreadByClient);
+      setTotalUnread(
+        Object.values(nextUnreadByClient).reduce((sum, count) => sum + count, 0)
+      );
+
       setLoading(false);
     }
 
@@ -99,6 +137,12 @@ export default function AdminDashboardPage() {
             <p className="portal-kicker">Admin Dashboard</p>
             <h1>Medios Accesible Admin</h1>
             <p>{adminProfile?.email}</p>
+
+            {totalUnread > 0 && (
+              <div className="notification-summary">
+                {totalUnread} unread client message{totalUnread === 1 ? "" : "s"}
+              </div>
+            )}
           </div>
 
           <div className="portal-header-actions">
@@ -112,25 +156,37 @@ export default function AdminDashboardPage() {
 
         <div className="portal-grid">
           <article className="portal-card">
-            <h2>Clients</h2>
+            <h2>
+              Clients
+              {totalUnread > 0 && <span className="notification-badge">{totalUnread}</span>}
+            </h2>
 
             {clients.length === 0 ? (
               <p>No client accounts yet.</p>
             ) : (
               <div className="portal-list">
-                {clients.map((client) => (
-                  <Link
-                    className="portal-list-item portal-clickable"
-                    href={`/admin/clients/${client.id}`}
-                    key={client.id}
-                  >
-                    <div>
-                      <h3>{client.full_name || client.company_name || "Client"}</h3>
-                      <p>{client.email}</p>
-                    </div>
-                    <span>Open →</span>
-                  </Link>
-                ))}
+                {clients.map((client) => {
+                  const unreadCount = unreadByClient[client.id] || 0;
+
+                  return (
+                    <Link
+                      className="portal-list-item portal-clickable"
+                      href={`/admin/clients/${client.id}`}
+                      key={client.id}
+                    >
+                      <div>
+                        <h3>
+                          {client.full_name || client.company_name || "Client"}
+                          {unreadCount > 0 && (
+                            <span className="notification-badge">{unreadCount}</span>
+                          )}
+                        </h3>
+                        <p>{client.email}</p>
+                      </div>
+                      <span>{unreadCount > 0 ? `${unreadCount} New` : "Open →"}</span>
+                    </Link>
+                  );
+                })}
               </div>
             )}
 
