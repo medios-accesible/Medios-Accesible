@@ -285,9 +285,15 @@ export default function AdminClientWorkspacePage() {
             <p>{client?.email}</p>
           </div>
 
-          <Link className="portal-link" href="/admin">
-            ← Admin Home
-          </Link>
+          <div className="portal-header-actions">
+            <Link className="portal-link" href="/">
+              Home
+            </Link>
+
+            <Link className="portal-link" href="/admin">
+              ← Admin
+            </Link>
+          </div>
         </header>
 
         <div className="portal-grid portal-grid-two">
