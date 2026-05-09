@@ -1908,3 +1908,217 @@ textarea:focus {
 .is-away .developer-status-line strong {
   color: var(--gold);
 }
+
+/* =========================
+   DETAILED PROJECT UPDATES
+========================= */
+
+.project-updates-card {
+  min-height: 260px;
+}
+
+.project-update-post-form textarea,
+.project-update-post-form select {
+  width: 100%;
+  color: #fff;
+  outline: none;
+  border: 1px solid rgba(0, 234, 255, 0.24);
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 13px;
+  padding: 15px 16px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.project-update-post-form textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.project-update-post-form select:focus,
+.project-update-post-form textarea:focus {
+  border-color: rgba(0, 234, 255, 0.75);
+  box-shadow: 0 0 0 4px rgba(0, 234, 255, 0.1);
+}
+
+.project-update-post-form option {
+  background: #050713;
+  color: #fff;
+}
+
+.checkbox-row {
+  display: flex !important;
+  grid-template-columns: none !important;
+  align-items: center;
+  gap: 10px !important;
+  padding: 10px 0;
+}
+
+.checkbox-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--cyan);
+}
+
+.project-updates-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.project-update-item {
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid rgba(0, 234, 255, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.028));
+}
+
+.project-update-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.project-update-meta span {
+  color: var(--cyan);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.project-update-item h3 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.project-update-item p {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.project-update-detail {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.project-update-detail strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--cyan);
+  font-size: 0.82rem;
+}
+
+.project-update-detail.highlight {
+  border-color: rgba(0, 255, 136, 0.28);
+  background: rgba(0, 255, 136, 0.07);
+}
+
+.project-update-detail.highlight strong {
+  color: var(--green);
+}
+
+.project-update-detail.warning {
+  border-color: rgba(255, 209, 102, 0.28);
+  background: rgba(255, 209, 102, 0.07);
+}
+
+.project-update-detail.warning strong {
+  color: var(--gold);
+}
+
+.private-update-label {
+  display: inline-flex;
+  margin-left: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255, 209, 102, 0.12);
+  border: 1px solid rgba(255, 209, 102, 0.28);
+  color: var(--gold);
+  font-size: 0.7rem;
+  font-weight: 900;
+  vertical-align: middle;
+}
+
+.client-project-updates-panel {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.client-project-updates-panel > h3 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+/* =========================
+   PROJECT PROGRESS SLIDER
+   Matches the neon progress bar style from the homepage portal preview
+========================= */
+
+.project-progress-editor {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 234, 255, 0.18);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.project-progress-preview {
+  height: 10px;
+}
+
+.project-progress-slider {
+  width: 100%;
+  height: 24px;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.project-progress-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.project-progress-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -7px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: linear-gradient(135deg, var(--pink), var(--cyan));
+  box-shadow:
+    0 0 18px rgba(255, 45, 255, 0.34),
+    0 0 20px rgba(0, 234, 255, 0.3);
+}
+
+.project-progress-slider::-moz-range-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.project-progress-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: linear-gradient(135deg, var(--pink), var(--cyan));
+  box-shadow:
+    0 0 18px rgba(255, 45, 255, 0.34),
+    0 0 20px rgba(0, 234, 255, 0.3);
+}
