@@ -1748,3 +1748,52 @@ textarea:focus {
     min-width: 0;
   }
 }
+
+/* =========================
+   PORTAL MESSAGE NOTIFICATIONS
+========================= */
+
+.notification-summary {
+  width: fit-content;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 45, 255, 0.42);
+  background: linear-gradient(90deg, rgba(255, 45, 255, 0.18), rgba(0, 234, 255, 0.12));
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 850;
+  box-shadow:
+    0 0 20px rgba(255, 45, 255, 0.18),
+    0 0 18px rgba(0, 234, 255, 0.12);
+}
+
+.notification-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  margin-left: 9px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--pink), var(--cyan));
+  color: #fff !important;
+  font-size: 0.72rem;
+  font-weight: 950;
+  line-height: 1;
+  box-shadow:
+    0 0 18px rgba(255, 45, 255, 0.28),
+    0 0 18px rgba(0, 234, 255, 0.2);
+  vertical-align: middle;
+}
+
+.portal-list-item .notification-badge {
+  margin-left: 8px;
+}
+
+@media (max-width: 900px) {
+  .notification-summary {
+    max-width: 100%;
+  }
+}
