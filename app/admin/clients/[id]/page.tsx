@@ -29,8 +29,18 @@ type Message = {
   project_id: string;
   sender_id: string;
   body: string;
+  attachment_url: string | null;
+  attachment_type: string | null;
+  attachment_name: string | null;
   created_at: string;
 };
+
+const CHAT_BUCKET = "chat-attachments";
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+
+function cleanFileName(fileName: string) {
+  return fileName.replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
+}
 
 export default function AdminClientWorkspacePage() {
   const router = useRouter();
@@ -44,6 +54,7 @@ export default function AdminClientWorkspacePage() {
   const [messages, setMessages] = useState<Message[]>([]);
 
   const [messageBody, setMessageBody] = useState("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [newProjectTitle, setNewProjectTitle] = useState("Website Build");
   const [newProjectPlan, setNewProjectPlan] = useState("Grow");
   const [newProjectPrice, setNewProjectPrice] = useState("300");
@@ -51,6 +62,16 @@ export default function AdminClientWorkspacePage() {
   const [loading, setLoading] = useState(true);
   const [savingProject, setSavingProject] = useState(false);
   const [sendingMessage, setSendingMessage] = useState(false);
+
+  async function fetchMessages(projectId: string) {
+    const { data: messageData } = await supabase
+      .from("messages")
+      .select("id, project_id, sender_id, body, attachment_url, attachment_type, attachment_name, created_at")
+      .eq("project_id", projectId)
+      .order("created_at", { ascending: true });
+
+    setMessages((messageData || []) as Message[]);
+  }
 
   async function loadWorkspace() {
     const { data: sessionData } = await supabase.auth.getSession();
@@ -96,13 +117,7 @@ export default function AdminClientWorkspacePage() {
     setSelectedProject(firstProject);
 
     if (firstProject) {
-      const { data: messageData } = await supabase
-        .from("messages")
-        .select("id, project_id, sender_id, body, created_at")
-        .eq("project_id", firstProject.id)
-        .order("created_at", { ascending: true });
-
-      setMessages((messageData || []) as Message[]);
+      await fetchMessages(firstProject.id);
     } else {
       setMessages([]);
     }
@@ -117,14 +132,8 @@ export default function AdminClientWorkspacePage() {
 
   async function selectProject(project: Project) {
     setSelectedProject(project);
-
-    const { data: messageData } = await supabase
-      .from("messages")
-      .select("id, project_id, sender_id, body, created_at")
-      .eq("project_id", project.id)
-      .order("created_at", { ascending: true });
-
-    setMessages((messageData || []) as Message[]);
+    setSelectedImage(null);
+    await fetchMessages(project.id);
   }
 
   async function createProject(event: React.FormEvent<HTMLFormElement>) {
@@ -152,35 +161,108 @@ export default function AdminClientWorkspacePage() {
     await loadWorkspace();
   }
 
-  async function sendMessage(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] || null;
 
-    if (!selectedProject || !adminProfile || !messageBody.trim()) return;
-
-    setSendingMessage(true);
-
-    const { error } = await supabase.from("messages").insert({
-      project_id: selectedProject.id,
-      sender_id: adminProfile.id,
-      body: messageBody.trim()
-    });
-
-    setSendingMessage(false);
-
-    if (error) {
-      alert(error.message);
+    if (!file) {
+      setSelectedImage(null);
       return;
     }
 
-    setMessageBody("");
+    if (!file.type.startsWith("image/")) {
+      alert("Please choose an image file.");
+      event.target.value = "";
+      setSelectedImage(null);
+      return;
+    }
 
-    const { data: messageData } = await supabase
-      .from("messages")
-      .select("id, project_id, sender_id, body, created_at")
-      .eq("project_id", selectedProject.id)
-      .order("created_at", { ascending: true });
+    if (file.size > MAX_IMAGE_SIZE) {
+      alert("Image is too large. Use an image under 5 MB.");
+      event.target.value = "";
+      setSelectedImage(null);
+      return;
+    }
 
-    setMessages((messageData || []) as Message[]);
+    setSelectedImage(file);
+  }
+
+  async function uploadChatImage(projectId: string, senderId: string, file: File) {
+    const safeName = cleanFileName(file.name);
+    const filePath = `${projectId}/${senderId}/${Date.now()}-${safeName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from(CHAT_BUCKET)
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false
+      });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    const { data } = supabase.storage.from(CHAT_BUCKET).getPublicUrl(filePath);
+
+    return {
+      url: data.publicUrl,
+      type: file.type,
+      name: file.name
+    };
+  }
+
+  async function sendMessage(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!selectedProject || !adminProfile) return;
+
+    const trimmedBody = messageBody.trim();
+
+    if (!trimmedBody && !selectedImage) {
+      alert("Write a message or choose an image.");
+      return;
+    }
+
+    setSendingMessage(true);
+
+    try {
+      let attachmentUrl: string | null = null;
+      let attachmentType: string | null = null;
+      let attachmentName: string | null = null;
+
+      if (selectedImage) {
+        const uploaded = await uploadChatImage(selectedProject.id, adminProfile.id, selectedImage);
+        attachmentUrl = uploaded.url;
+        attachmentType = uploaded.type;
+        attachmentName = uploaded.name;
+      }
+
+      const { error } = await supabase.from("messages").insert({
+        project_id: selectedProject.id,
+        sender_id: adminProfile.id,
+        body: trimmedBody || (attachmentName ? `Uploaded ${attachmentName}` : ""),
+        attachment_url: attachmentUrl,
+        attachment_type: attachmentType,
+        attachment_name: attachmentName
+      });
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      setMessageBody("");
+      setSelectedImage(null);
+
+      const fileInput = document.getElementById("admin-chat-image") as HTMLInputElement | null;
+      if (fileInput) fileInput.value = "";
+
+      await fetchMessages(selectedProject.id);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Image upload failed.";
+      alert(message);
+    } finally {
+      setSendingMessage(false);
+    }
   }
 
   if (loading) {
@@ -297,7 +379,23 @@ export default function AdminClientWorkspacePage() {
                           key={message.id}
                         >
                           <span>{isAdmin ? "You" : client?.full_name || "Client"}</span>
-                          <p>{message.body}</p>
+
+                          {message.body && <p>{message.body}</p>}
+
+                          {message.attachment_url && message.attachment_type?.startsWith("image/") && (
+                            <a
+                              href={message.attachment_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="message-attachment-link"
+                            >
+                              <img
+                                className="message-attachment"
+                                src={message.attachment_url}
+                                alt={message.attachment_name || "Chat attachment"}
+                              />
+                            </a>
+                          )}
                         </div>
                       );
                     })
@@ -309,8 +407,17 @@ export default function AdminClientWorkspacePage() {
                     value={messageBody}
                     onChange={(event) => setMessageBody(event.target.value)}
                     placeholder="Write a message to this client..."
-                    required
                   />
+
+                  <label className="file-picker">
+                    <span>{selectedImage ? selectedImage.name : "Attach image"}</span>
+                    <input
+                      id="admin-chat-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
+                  </label>
 
                   <button className="auth-submit" type="submit" disabled={sendingMessage}>
                     {sendingMessage ? "Sending..." : "Send Message"}
