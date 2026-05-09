@@ -187,7 +187,7 @@ ${message}`);
           <a href="#contact">Contact</a>
         </nav>
 
-        <a className="login-btn" href="#portal">
+        <a className="login-btn" href="/login">
           Client Login ⊗
         </a>
       </header>
@@ -339,7 +339,7 @@ ${message}`);
                 </div>
               </div>
 
-              <a className="portal-btn" href="#contact">
+              <a className="portal-btn" href="/login">
                 Go to Portal →
               </a>
             </aside>
