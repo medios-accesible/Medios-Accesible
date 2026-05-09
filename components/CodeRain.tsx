@@ -14,10 +14,10 @@ export default function CodeRain({ className = "hero-canvas" }: CodeRainProps) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const parent = canvas.parentElement;
+    const parentElement = canvas.parentElement;
     const ctx = canvas.getContext("2d");
 
-    if (!parent || !ctx) return;
+    if (!parentElement || !ctx) return;
 
     let columns: Array<{
       y: number;
@@ -33,7 +33,7 @@ export default function CodeRain({ className = "hero-canvas" }: CodeRainProps) {
     const characters = "01{}[]<>/#$@AIUXSEOCLIENTPORTALWEBMEDIOSACCESIBLE";
 
     function resizeCanvas() {
-      const rect = parent.getBoundingClientRect();
+      const rect = parentElement.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
 
       canvas.width = rect.width * dpr;
