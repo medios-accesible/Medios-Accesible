@@ -1717,3 +1717,34 @@ textarea:focus {
     height: 36px;
   }
 }
+
+/* =========================
+   PORTAL HEADER NAVIGATION
+   Keeps Home, Back, and Sign Out available without logging out
+========================= */
+
+.portal-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.portal-header-actions .portal-link,
+.portal-header-actions button {
+  min-width: 112px;
+}
+
+@media (max-width: 900px) {
+  .portal-header-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .portal-header-actions .portal-link,
+  .portal-header-actions button {
+    flex: 1;
+    min-width: 0;
+  }
+}
