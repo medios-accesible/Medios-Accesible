@@ -34,6 +34,19 @@ export default function AdminClientsPage() {
   const [totalUnread, setTotalUnread] = useState(0);
   const [loading, setLoading] = useState(true);
 
+
+  useEffect(() => {
+    async function setDeveloperLoggedIn() {
+      await supabase.from("developer_presence").upsert({
+        id: "main",
+        is_logged_in: true,
+        last_seen_at: new Date().toISOString()
+      });
+    }
+
+    setDeveloperLoggedIn();
+  }, []);
+
   useEffect(() => {
     async function loadClients() {
       const { data: sessionData } = await supabase.auth.getSession();
