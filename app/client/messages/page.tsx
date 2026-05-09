@@ -238,9 +238,15 @@ export default function ClientMessagesPage() {
             <p>{profile?.email}</p>
           </div>
 
-          <Link className="portal-link" href="/client">
-            ← Client Home
-          </Link>
+          <div className="portal-header-actions">
+            <Link className="portal-link" href="/">
+              Home
+            </Link>
+
+            <Link className="portal-link" href="/client">
+              ← Client
+            </Link>
+          </div>
         </header>
 
         <article className="portal-card">
