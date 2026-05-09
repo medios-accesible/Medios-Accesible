@@ -2,7 +2,35 @@
 
 import { useEffect, useMemo, useState } from "react";
 import CodeRain from "./CodeRain";
+import { supabase } from "../lib/supabaseClient";
 import { siteContent, type FeatureIcon } from "../data/siteContent";
+
+type PortalRole = "admin" | "client" | null;
+
+type PortalProfile = {
+  id: string;
+  email: string;
+  full_name: string | null;
+  company_name: string | null;
+  role: "admin" | "client";
+};
+
+type PortalProject = {
+  id: string;
+  title: string;
+  status: string;
+  stage: string;
+  progress: number;
+  plan: string | null;
+  monthly_price: number | null;
+};
+
+type DeveloperPresence = {
+  id: string;
+  is_logged_in: boolean | null;
+  last_seen_at: string | null;
+};
+
 
 function Icon({ type }: { type: FeatureIcon }) {
   if (type === "website") {
@@ -60,11 +88,95 @@ function Icon({ type }: { type: FeatureIcon }) {
 
 export default function DesktopHome() {
   const [year, setYear] = useState("2026");
+  const [portalRole, setPortalRole] = useState<PortalRole>(null);
+  const [portalProfile, setPortalProfile] = useState<PortalProfile | null>(null);
+  const [portalProject, setPortalProject] = useState<PortalProject | null>(null);
+  const [portalLoading, setPortalLoading] = useState(true);
+  const [developerAtDesk, setDeveloperAtDesk] = useState(false);
 
   const navSections = useMemo(
     () => ["home", "services", "portfolio", "blog", "contact"],
     []
   );
+
+  const portalHref = portalRole === "admin" ? "/admin" : portalRole === "client" ? "/client" : "/login";
+  const portalButtonLabel = portalRole ? "Open Portal" : "Client Login";
+
+  useEffect(() => {
+    async function loadDeveloperPresence() {
+      const { data: presenceData } = await supabase
+        .from("developer_presence")
+        .select("id, is_logged_in, last_seen_at")
+        .eq("id", "main")
+        .maybeSingle();
+
+      const presence = presenceData as DeveloperPresence | null;
+      setDeveloperAtDesk(Boolean(presence?.is_logged_in));
+    }
+
+    async function loadPortalSession() {
+      setPortalLoading(true);
+      await loadDeveloperPresence();
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData.session?.user;
+
+      if (!user) {
+        setPortalRole(null);
+        setPortalProfile(null);
+        setPortalProject(null);
+        setPortalLoading(false);
+        return;
+      }
+
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("id, email, full_name, company_name, role")
+        .eq("id", user.id)
+        .single();
+
+      if (!profileData) {
+        setPortalRole(null);
+        setPortalProfile(null);
+        setPortalProject(null);
+        setPortalLoading(false);
+        return;
+      }
+
+      const profile = profileData as PortalProfile;
+      setPortalProfile(profile);
+      setPortalRole(profile.role);
+
+      if (profile.role === "client") {
+        const { data: projectData } = await supabase
+          .from("client_projects")
+          .select("id, title, status, stage, progress, plan, monthly_price")
+          .eq("client_id", profile.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        setPortalProject((projectData || null) as PortalProject | null);
+      } else {
+        setPortalProject(null);
+      }
+
+      setPortalLoading(false);
+    }
+
+    loadPortalSession();
+    const presenceInterval = window.setInterval(loadDeveloperPresence, 45000);
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(() => {
+      loadPortalSession();
+    });
+
+    return () => {
+      window.clearInterval(presenceInterval);
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
 
   useEffect(() => {
     setYear(String(new Date().getFullYear()));
@@ -187,8 +299,8 @@ ${message}`);
           <a href="#contact">Contact</a>
         </nav>
 
-        <a className="login-btn" href="/login">
-          Client Login ⊗
+        <a className="login-btn" href={portalHref}>
+          {portalButtonLabel} ⊗
         </a>
       </header>
 
@@ -282,65 +394,104 @@ ${message}`);
 
             <aside className="portal-preview reveal" id="portal">
               <div className="portal-top">
-                <strong>‹ Client Portal Preview</strong>
-                <span className="live">Live</span>
+                <strong>
+                  <a className="portal-preview-link" href={portalHref}>
+                    ‹ {portalRole === "admin" ? "Admin Portal" : portalRole === "client" ? "Your Client Portal" : "Client Portal Preview"}
+                  </a>
+                </strong>
+                <span className="live">{portalRole ? "Signed In" : "Live"}</span>
               </div>
 
               <div className="portal-columns">
                 <div className="progress-block">
                   <div>
                     <div className="meter-label">
-                      <span>Project Status</span>
-                      <strong>On Track</strong>
+                      <span>{portalRole === "client" ? "Your Project" : "Project Status"}</span>
+                      <strong>
+                        {portalLoading
+                          ? "Loading"
+                          : portalProject
+                            ? portalProject.stage
+                            : portalRole === "admin"
+                              ? "Admin Access"
+                              : portalRole === "client"
+                                ? "No Project Yet"
+                                : "On Track"}
+                      </strong>
                     </div>
                     <div className="bar">
-                      <span style={{ width: "75%" }}></span>
+                      <span style={{ width: `${portalProject?.progress ?? 75}%` }}></span>
                     </div>
                   </div>
 
                   <div>
                     <div className="meter-label">
-                      <span>Hours Used</span>
-                      <strong>36 / 50 hrs</strong>
+                      <span>{portalProject?.title || (portalRole === "admin" ? "Dashboard" : "Portal Access")}</span>
+                      <strong>{portalProject ? `${portalProject.progress}%` : portalRole ? "Ready" : "Preview"}</strong>
                     </div>
                     <div className="bar">
-                      <span style={{ width: "72%" }}></span>
+                      <span style={{ width: `${portalProject?.progress ?? 72}%` }}></span>
                     </div>
                   </div>
 
                   <div className="buyout">
-                    <span>Current Plan</span>
-                    <strong>$300/mo</strong>
+                    <span>{portalRole === "client" ? "Current Plan" : "Portal"}</span>
+                    <strong>
+                      {portalProject?.monthly_price
+                        ? `$${portalProject.monthly_price}/mo`
+                        : portalProject?.plan || (portalRole === "admin" ? "Admin" : "Login")}
+                    </strong>
                   </div>
                 </div>
 
                 <div className="queue">
-                  <div className="queue-title">Content Queue</div>
-
-                  <div className="queue-row">
-                    <span>Home Page Update</span>
-                    <span>In Progress</span>
+                  <div className="queue-title">
+                    {portalRole === "client"
+                      ? `Welcome ${portalProfile?.full_name || portalProfile?.company_name || "Client"}`
+                      : portalRole === "admin"
+                        ? "Admin Shortcuts"
+                        : "Content Queue"}
                   </div>
 
                   <div className="queue-row">
-                    <span>New Service Page</span>
-                    <span className="pink">Queued</span>
+                    <span>{portalProject?.title || "Home Page Update"}</span>
+                    <span>{portalProject?.status || "In Progress"}</span>
                   </div>
 
                   <div className="queue-row">
-                    <span>Blog Post: 5 Ways...</span>
-                    <span className="gold">Review</span>
+                    <span>{portalRole === "client" ? "Private Messages" : portalRole === "admin" ? "Client Workspaces" : "New Service Page"}</span>
+                    <span className="pink">{portalRole ? "Open" : "Queued"}</span>
                   </div>
 
                   <div className="queue-row">
-                    <span>Case Study Upload</span>
-                    <span className="pink">Queued</span>
+                    <span>{portalRole === "client" ? "Project Updates" : portalRole === "admin" ? "Projects" : "Blog Post: 5 Ways..."}</span>
+                    <span className="gold">{portalRole ? "Live" : "Review"}</span>
+                  </div>
+
+                  <div className="queue-row">
+                    <span>{portalProfile?.email || "Case Study Upload"}</span>
+                    <span className="pink">{portalRole ? "Active" : "Queued"}</span>
                   </div>
                 </div>
               </div>
 
-              <a className="portal-btn" href="/login">
-                Go to Portal →
+              <div className={`developer-status-inline ${developerAtDesk ? "is-online" : "is-away"}`}>
+                <span className="developer-status-dot"></span>
+                <p>
+                  {developerAtDesk
+                    ? "Developer is currently at his desk. Clients should message me in the client portal."
+                    : "Developer is currently away from his desk. Please call or send email for a timely response."}
+                </p>
+              </div>
+
+              {!portalRole && (
+                <p className="portal-preview-note">
+                  Preview data only. Sign in to see your real project updates.
+                </p>
+              )}
+
+              <a className="portal-btn" href={portalHref}>
+                {portalRole ? "Open Your Portal →" : "Go to Portal →"}
               </a>
             </aside>
           </div>
