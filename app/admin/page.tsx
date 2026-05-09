@@ -41,6 +41,19 @@ export default function AdminDashboardPage() {
   const [totalUnread, setTotalUnread] = useState(0);
   const [loading, setLoading] = useState(true);
 
+
+  useEffect(() => {
+    async function setDeveloperLoggedIn() {
+      await supabase.from("developer_presence").upsert({
+        id: "main",
+        is_logged_in: true,
+        last_seen_at: new Date().toISOString()
+      });
+    }
+
+    setDeveloperLoggedIn();
+  }, []);
+
   useEffect(() => {
     async function loadAdminDashboard() {
       const { data: sessionData } = await supabase.auth.getSession();
@@ -115,6 +128,14 @@ export default function AdminDashboardPage() {
   }, [router]);
 
   async function handleSignOut() {
+    await supabase
+      .from("developer_presence")
+      .update({
+        is_logged_in: false,
+        last_seen_at: new Date().toISOString()
+      })
+      .eq("id", "main");
+
     await supabase.auth.signOut();
     router.push("/login");
   }
