@@ -1,5 +1,6 @@
-// Vercel build check: fixed parentElement version2
 "use client";
+
+// Vercel build check: fixed parentElement version
 
 import { useEffect, useRef } from "react";
 
@@ -15,10 +16,12 @@ export default function CodeRain({ className = "hero-canvas" }: CodeRainProps) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const parentElement = canvas.parentElement;
+    const possibleParent = canvas.parentElement;
     const ctx = canvas.getContext("2d");
 
-    if (!parentElement || !ctx) return;
+    if (!possibleParent || !ctx) return;
+
+    const parentElement: HTMLElement = possibleParent;
 
     let columns: Array<{
       y: number;
