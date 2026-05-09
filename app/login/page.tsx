@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabaseClient";
 
@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [checkingSession, setCheckingSession] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -28,16 +29,34 @@ export default function LoginPage() {
 
     if (profileError) {
       setError("Login worked, but profile could not be loaded.");
+      setCheckingSession(false);
       return;
     }
 
     if (profile?.role === "admin") {
-      router.push("/admin");
+      router.replace("/admin");
       return;
     }
 
-    router.push("/client");
+    router.replace("/client");
   }
+
+  useEffect(() => {
+    async function checkExistingSession() {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData.session?.user;
+
+      if (user) {
+        await redirectByRole(user.id);
+        return;
+      }
+
+      setCheckingSession(false);
+    }
+
+    checkExistingSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -96,6 +115,25 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (checkingSession) {
+    return (
+      <main className="auth-page">
+        <section className="auth-card">
+          <div className="auth-brand">
+            <img
+              src="https://res.cloudinary.com/dovrzmlqj/image/upload/v1778281428/my-company-logo_gavksa.png"
+              alt="Medios Accesible logo"
+            />
+            <span>Medios Accesible</span>
+          </div>
+
+          <h1>Opening Portal</h1>
+          <p>Checking your secure session...</p>
+        </section>
+      </main>
+    );
   }
 
   return (
