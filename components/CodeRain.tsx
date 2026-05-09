@@ -1,3 +1,4 @@
+// Vercel build check: fixed parentElement version
 "use client";
 
 import { useEffect, useRef } from "react";
