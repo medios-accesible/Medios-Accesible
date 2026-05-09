@@ -60,9 +60,40 @@ export default function AdminClientWorkspacePage() {
   const [newProjectPlan, setNewProjectPlan] = useState("Grow");
   const [newProjectPrice, setNewProjectPrice] = useState("300");
 
+  const [editProjectTitle, setEditProjectTitle] = useState("");
+  const [editProjectStatus, setEditProjectStatus] = useState("active");
+  const [editProjectStage, setEditProjectStage] = useState("");
+  const [editProjectProgress, setEditProjectProgress] = useState("0");
+  const [editProjectPlan, setEditProjectPlan] = useState("");
+  const [editProjectPrice, setEditProjectPrice] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [savingProject, setSavingProject] = useState(false);
+  const [savingProjectUpdate, setSavingProjectUpdate] = useState(false);
   const [sendingMessage, setSendingMessage] = useState(false);
+
+  function syncProjectEditor(project: Project | null) {
+    if (!project) {
+      setEditProjectTitle("");
+      setEditProjectStatus("active");
+      setEditProjectStage("");
+      setEditProjectProgress("0");
+      setEditProjectPlan("");
+      setEditProjectPrice("");
+      return;
+    }
+
+    setEditProjectTitle(project.title || "");
+    setEditProjectStatus(project.status || "active");
+    setEditProjectStage(project.stage || "");
+    setEditProjectProgress(String(project.progress ?? 0));
+    setEditProjectPlan(project.plan || "");
+    setEditProjectPrice(
+      project.monthly_price === null || project.monthly_price === undefined
+        ? ""
+        : String(project.monthly_price)
+    );
+  }
 
   async function fetchMessages(projectId: string, currentAdminId = adminProfile?.id) {
     if (currentAdminId) {
@@ -125,6 +156,7 @@ export default function AdminClientWorkspacePage() {
 
     const firstProject = loadedProjects[0] || null;
     setSelectedProject(firstProject);
+    syncProjectEditor(firstProject);
 
     if (firstProject) {
       await fetchMessages(firstProject.id, userId);
@@ -135,6 +167,19 @@ export default function AdminClientWorkspacePage() {
     setLoading(false);
   }
 
+
+  useEffect(() => {
+    async function setDeveloperLoggedIn() {
+      await supabase.from("developer_presence").upsert({
+        id: "main",
+        is_logged_in: true,
+        last_seen_at: new Date().toISOString()
+      });
+    }
+
+    setDeveloperLoggedIn();
+  }, []);
+
   useEffect(() => {
     loadWorkspace();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -142,6 +187,7 @@ export default function AdminClientWorkspacePage() {
 
   async function selectProject(project: Project) {
     setSelectedProject(project);
+    syncProjectEditor(project);
     setSelectedImage(null);
     await fetchMessages(project.id);
   }
@@ -169,6 +215,52 @@ export default function AdminClientWorkspacePage() {
     }
 
     await loadWorkspace();
+  }
+
+  async function updateSelectedProject(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!selectedProject) return;
+
+    const cleanProgress = Math.min(
+      100,
+      Math.max(0, Number(editProjectProgress || 0))
+    );
+
+    setSavingProjectUpdate(true);
+
+    const updates = {
+      title: editProjectTitle.trim(),
+      status: editProjectStatus.trim(),
+      stage: editProjectStage.trim(),
+      progress: cleanProgress,
+      plan: editProjectPlan.trim() || null,
+      monthly_price: editProjectPrice.trim() ? Number(editProjectPrice) : null
+    };
+
+    const { data, error } = await supabase
+      .from("client_projects")
+      .update(updates)
+      .eq("id", selectedProject.id)
+      .select("id, title, status, stage, progress, plan, monthly_price, client_id")
+      .single();
+
+    setSavingProjectUpdate(false);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    const updatedProject = data as Project;
+
+    setSelectedProject(updatedProject);
+    syncProjectEditor(updatedProject);
+    setProjects((currentProjects) =>
+      currentProjects.map((project) =>
+        project.id === updatedProject.id ? updatedProject : project
+      )
+    );
   }
 
   function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -332,6 +424,79 @@ export default function AdminClientWorkspacePage() {
                   </button>
                 ))}
               </div>
+            )}
+
+            {selectedProject && (
+              <form className="portal-form project-update-form" onSubmit={updateSelectedProject}>
+                <h3>Edit Selected Project</h3>
+
+                <label>
+                  Project Title
+                  <input
+                    value={editProjectTitle}
+                    onChange={(event) => setEditProjectTitle(event.target.value)}
+                    required
+                  />
+                </label>
+
+                <label>
+                  Stage
+                  <input
+                    value={editProjectStage}
+                    onChange={(event) => setEditProjectStage(event.target.value)}
+                    placeholder="Onboarding, Design, Development, Review..."
+                    required
+                  />
+                </label>
+
+                <label>
+                  Status
+                  <select
+                    value={editProjectStatus}
+                    onChange={(event) => setEditProjectStatus(event.target.value)}
+                  >
+                    <option value="active">Active</option>
+                    <option value="on hold">On Hold</option>
+                    <option value="review">Review</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </label>
+
+                <label>
+                  Progress: {editProjectProgress}%
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={editProjectProgress}
+                    onChange={(event) => setEditProjectProgress(event.target.value)}
+                  />
+                </label>
+
+                <label>
+                  Plan
+                  <input
+                    value={editProjectPlan}
+                    onChange={(event) => setEditProjectPlan(event.target.value)}
+                    placeholder="Start, Grow, Pro..."
+                  />
+                </label>
+
+                <label>
+                  Monthly Price
+                  <input
+                    type="number"
+                    value={editProjectPrice}
+                    onChange={(event) => setEditProjectPrice(event.target.value)}
+                    placeholder="300"
+                  />
+                </label>
+
+                <button className="auth-submit" type="submit" disabled={savingProjectUpdate}>
+                  {savingProjectUpdate ? "Saving..." : "Save Project Updates"}
+                </button>
+              </form>
             )}
 
             <form className="portal-form" onSubmit={createProject}>
