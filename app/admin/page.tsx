@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabaseClient";
@@ -112,16 +113,26 @@ export default function AdminDashboardPage() {
             ) : (
               <div className="portal-list">
                 {clients.map((client) => (
-                  <div className="portal-list-item" key={client.id}>
+                  <Link
+                    className="portal-list-item portal-clickable"
+                    href={`/admin/clients/${client.id}`}
+                    key={client.id}
+                  >
                     <div>
                       <h3>{client.full_name || client.company_name || "Client"}</h3>
                       <p>{client.email}</p>
                     </div>
-                    <span>Client</span>
-                  </div>
+                    <span>Open →</span>
+                  </Link>
                 ))}
               </div>
             )}
+
+            <div className="portal-actions">
+              <Link className="portal-link" href="/admin/clients">
+                View All Clients →
+              </Link>
+            </div>
           </article>
 
           <article className="portal-card">
@@ -150,8 +161,7 @@ export default function AdminDashboardPage() {
           <article className="portal-card">
             <h2>Next Step</h2>
             <p>
-              Next we add individual client pages, private messages, project updates,
-              and admin controls.
+              Open a client workspace to message them, create projects, and update progress.
             </p>
           </article>
         </div>
