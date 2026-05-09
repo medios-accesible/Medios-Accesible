@@ -97,7 +97,13 @@ export default function ClientDashboardPage() {
             <p>{profile?.email}</p>
           </div>
 
-          <button onClick={handleSignOut}>Sign Out</button>
+          <div className="portal-header-actions">
+            <Link className="portal-link" href="/">
+              Home
+            </Link>
+
+            <button onClick={handleSignOut}>Sign Out</button>
+          </div>
         </header>
 
         <div className="portal-grid">
