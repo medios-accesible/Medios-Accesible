@@ -322,9 +322,9 @@ ${message}`);
             Home
           </a>
           <a href="/services">Services</a>
-          <a href="#portfolio">Portfolio</a>
+          <a href="/portfolio">Portfolio</a>
           <a href="/blog">Blog</a>
-          <a href="#contact">Contact</a>
+          <a href="/contact">Contact</a>
         </nav>
 
         <a className="login-btn" href={portalHref}>
@@ -363,7 +363,7 @@ ${message}`);
                   {siteContent.hero.primaryButton} <span>→</span>
                 </a>
 
-                <a className="btn btn-secondary" href="#portfolio">
+                <a className="btn btn-secondary" href="/portfolio">
                   {siteContent.hero.secondaryButton} <span>&lt;/&gt;</span>
                 </a>
               </div>
@@ -413,7 +413,7 @@ ${message}`);
                     ))}
                   </ul>
 
-                  <a className="mini-btn" href="#contact">
+                  <a className="mini-btn" href="/contact">
                     Get Started →
                   </a>
                 </article>
