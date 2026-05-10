@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabaseClient";
 
@@ -22,13 +22,16 @@ type Project = {
   plan: string | null;
   monthly_price: number | null;
   site_url: string | null;
+  created_at?: string;
 };
 
 type MessageNotification = {
   id: string;
   project_id: string;
   sender_id: string;
+  body?: string | null;
   read_at: string | null;
+  created_at: string;
 };
 
 type ProjectUpdate = {
@@ -53,15 +56,36 @@ type DeveloperPresence = {
   last_seen_at: string | null;
 };
 
+function formatDate(value?: string | null) {
+  if (!value) return "Not updated yet";
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(new Date(value));
+}
+
+function getGreetingName(profile: Profile | null) {
+  return profile?.full_name || profile?.company_name || "Client";
+}
+
 export default function ClientDashboardPage() {
   const router = useRouter();
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [latestUpdates, setLatestUpdates] = useState<ProjectUpdate[]>([]);
-  const [unreadMessages, setUnreadMessages] = useState(0);
+  const [unreadMessages, setUnreadMessages] = useState<MessageNotification[]>([]);
   const [developerAtDesk, setDeveloperAtDesk] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const activeProject = projects[0] || null;
+  const primaryUpdate = latestUpdates[0] || null;
+
+  const monthlyTotal = useMemo(() => {
+    return projects.reduce((sum, project) => sum + Number(project.monthly_price || 0), 0);
+  }, [projects]);
 
   useEffect(() => {
     async function loadClientDashboard() {
@@ -94,7 +118,7 @@ export default function ClientDashboardPage() {
 
       const { data: projectData } = await supabase
         .from("client_projects")
-        .select("id, title, status, stage, progress, plan, monthly_price, site_url")
+        .select("id, title, status, stage, progress, plan, monthly_price, site_url, created_at")
         .eq("client_id", userId)
         .order("created_at", { ascending: false });
 
@@ -112,24 +136,23 @@ export default function ClientDashboardPage() {
           .in("project_id", projectIds)
           .eq("is_visible_to_client", true)
           .order("created_at", { ascending: false })
-          .limit(3);
+          .limit(6);
 
         setLatestUpdates((updateData || []) as ProjectUpdate[]);
-      } else {
-        setLatestUpdates([]);
-      }
 
-      if (projectIds.length > 0) {
-        const { data: unreadData } = await supabase
+        const { data: messageData } = await supabase
           .from("messages")
-          .select("id, project_id, sender_id, read_at")
+          .select("id, project_id, sender_id, body, read_at, created_at")
           .in("project_id", projectIds)
           .is("read_at", null)
-          .neq("sender_id", userId);
+          .neq("sender_id", userId)
+          .order("created_at", { ascending: false })
+          .limit(8);
 
-        setUnreadMessages(((unreadData || []) as MessageNotification[]).length);
+        setUnreadMessages((messageData || []) as MessageNotification[]);
       } else {
-        setUnreadMessages(0);
+        setLatestUpdates([]);
+        setUnreadMessages([]);
       }
 
       const { data: presenceData } = await supabase
@@ -154,301 +177,356 @@ export default function ClientDashboardPage() {
 
   if (loading) {
     return (
-      <main className="portal-page">
-        <section className="portal-card">
-          <p>Loading client dashboard...</p>
+      <main className="portal-dashboard-page">
+        <section className="portal-dashboard-loading">
+          <p>Loading client portal...</p>
         </section>
       </main>
     );
   }
 
   return (
-    <main className="portal-page">
-      <section className="portal-shell">
-        <header className="portal-header">
+    <main className="portal-dashboard-page">
+      <aside className="portal-sidebar">
+        <Link className="portal-sidebar-brand" href="/">
+          <div className="portal-brand-mark">&lt;/&gt;</div>
           <div>
-            <p className="portal-kicker">Client Portal</p>
-            <h1>Welcome, {profile?.full_name || profile?.company_name || "Client"}</h1>
-            <p>{profile?.email}</p>
+            <strong>{getGreetingName(profile)}</strong>
+            <span>Client Portal</span>
+          </div>
+        </Link>
 
-            {unreadMessages > 0 && (
-              <div className="notification-summary">
-                {unreadMessages} unread message{unreadMessages === 1 ? "" : "s"}
-              </div>
-            )}
+        <nav className="portal-sidebar-nav">
+          <Link className="active" href="/client">
+            <span>▦</span> Dashboard
+          </Link>
+          <a href="#active-project">
+            <span>□</span> Projects
+          </a>
+          <Link href="/client/messages">
+            <span>☵</span> Messages
+            {unreadMessages.length > 0 && <b>{unreadMessages.length}</b>}
+          </Link>
+          <a href="#project-updates">
+            <span>◎</span> Updates
+          </a>
+          <a href="#files">
+            <span>▱</span> Files
+          </a>
+          <a href="#billing">
+            <span>▣</span> Invoices
+          </a>
+          <a href="#settings">
+            <span>⚙</span> Settings
+          </a>
+        </nav>
+
+        <div className="portal-sidebar-actions">
+          <p>Quick Actions</p>
+
+          <Link href="/client/messages">
+            <span>＋</span> New Message
+          </Link>
+
+          <Link href="/client/messages">
+            <span>⟳</span> Request Update
+          </Link>
+        </div>
+
+        <div className="portal-sidebar-help">
+          <p>Need help?</p>
+          <span>We&apos;re here to help you</span>
+          <a href="mailto:mediosaccesible@gmail.com">Contact Support</a>
+        </div>
+      </aside>
+
+      <section className="portal-dashboard-main">
+        <header className="portal-dashboard-header">
+          <div>
+            <p>Welcome back,</p>
+            <h1>{getGreetingName(profile)} <span>👋</span></h1>
+            <span>{profile?.email}</span>
           </div>
 
           <div className="portal-header-actions">
-            <Link className="portal-link" href="/">
-              Home
+            <Link className="portal-top-button is-home" href="/">
+              ⌂ Home
             </Link>
 
-            <button onClick={handleSignOut}>Sign Out</button>
+            <button className="portal-top-button" onClick={handleSignOut}>
+              ⎋ Sign Out →
+            </button>
           </div>
         </header>
 
-        <div className="portal-grid">
-          <article className="portal-card">
-            <h2>Your Projects</h2>
-
-            {projects.length === 0 ? (
-              <p>No projects have been assigned yet.</p>
-            ) : (
-              <div className="client-project-stack">
-                {projects.map((project) => {
-                  const projectUpdates = latestUpdates.filter(
-                    (update) => update.project_id === project.id
-                  );
-                  const primaryUpdate = projectUpdates[0];
-
-                  return (
-                    <div className="client-project-portal-preview" key={project.id}>
-                      <div className="portal-top">
-                        <strong>‹ {project.title}</strong>
-                        <span className="live">{project.status}</span>
-                      </div>
-
-                      <div className="portal-columns">
-                        <div className="progress-block">
-                          <div>
-                            <div className="meter-label">
-                              <span>Project Status</span>
-                              <strong>{project.stage}</strong>
-                            </div>
-                            <div className="bar">
-                              <span style={{ width: `${project.progress}%` }}></span>
-                            </div>
-                          </div>
-
-                          <div>
-                            <div className="meter-label">
-                              <span>Progress Complete</span>
-                              <strong>{project.progress}%</strong>
-                            </div>
-                            <div className="bar">
-                              <span style={{ width: `${project.progress}%` }}></span>
-                            </div>
-                          </div>
-
-                          <div className="buyout">
-                            <span>Current Plan</span>
-                            <strong>
-                              {project.monthly_price
-                                ? `$${project.monthly_price}/mo`
-                                : project.plan || "Active"}
-                            </strong>
-                          </div>
-
-                          <div className="buyout">
-                            <span>Preview Link</span>
-                            <strong>{project.site_url ? "Ready" : "Pending"}</strong>
-                          </div>
-                        </div>
-
-                        <div className="queue">
-                          <div className="queue-title">Update Queue</div>
-
-                          <div className="queue-row">
-                            <span>{primaryUpdate?.title || "Project Update"}</span>
-                            <span>{primaryUpdate?.update_type || project.stage}</span>
-                          </div>
-
-                          <div className="queue-row">
-                            <span>Completed Work</span>
-                            <span className="pink">
-                              {primaryUpdate?.completed_work ? "Updated" : "Pending"}
-                            </span>
-                          </div>
-
-                          <div className="queue-row">
-                            <span>Next Steps</span>
-                            <span className="gold">
-                              {primaryUpdate?.next_steps ? "Posted" : "Waiting"}
-                            </span>
-                          </div>
-
-                          <div className="queue-row">
-                            <span>Client Action</span>
-                            <span className="pink">
-                              {primaryUpdate?.client_action_needed ? "Needed" : "None"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {primaryUpdate && (
-                        <div className="client-project-preview-update">
-                          <h3>{primaryUpdate.title}</h3>
-                          <p>{primaryUpdate.summary}</p>
-
-                          {primaryUpdate.completed_work && (
-                            <div className="project-update-detail">
-                              <strong>Completed:</strong>
-                              <p>{primaryUpdate.completed_work}</p>
-                            </div>
-                          )}
-
-                          {primaryUpdate.next_steps && (
-                            <div className="project-update-detail">
-                              <strong>Next:</strong>
-                              <p>{primaryUpdate.next_steps}</p>
-                            </div>
-                          )}
-
-                          {primaryUpdate.client_action_needed && (
-                            <div className="project-update-detail highlight">
-                              <strong>Action needed from you:</strong>
-                              <p>{primaryUpdate.client_action_needed}</p>
-                            </div>
-                          )}
-
-                          {primaryUpdate.blockers && (
-                            <div className="project-update-detail warning">
-                              <strong>Blockers:</strong>
-                              <p>{primaryUpdate.blockers}</p>
-                            </div>
-                          )}
-
-                          {primaryUpdate.estimated_completion && (
-                            <div className="project-update-detail">
-                              <strong>Timing:</strong>
-                              <p>{primaryUpdate.estimated_completion}</p>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      <div className="client-project-actions">
-                        {project.site_url ? (
-                          <a
-                            className="portal-btn"
-                            href={project.site_url}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            Open Site Preview ↗
-                          </a>
-                        ) : (
-                          <span className="project-link-muted">
-                            Site preview link has not been added yet.
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </article>
-
-          <article className="portal-card">
-            <h2>
-              Messages
-              {unreadMessages > 0 && (
-                <span className="notification-badge">{unreadMessages}</span>
-              )}
-            </h2>
-            <p>Send project questions, updates, approvals, and requests directly to Medios Accesible.</p>
-
-            <div className="portal-actions">
-              <Link className="portal-link" href="/client/messages">
-                {unreadMessages > 0
-                  ? `Open Messages (${unreadMessages} New) →`
-                  : "Open Messages →"}
-              </Link>
+        <div className="portal-stat-grid">
+          <article className="portal-stat-card">
+            <div className="portal-stat-icon">□</div>
+            <div>
+              <span>Active Projects</span>
+              <strong>{projects.length}</strong>
+              <p><i></i> Currently in progress</p>
             </div>
           </article>
 
-          <article className="portal-card project-updates-card">
-            <h2>Project Updates</h2>
-
-            {latestUpdates.length === 0 ? (
-              <p>No detailed project updates have been posted yet.</p>
-            ) : (
-              <div className="project-updates-list">
-                {latestUpdates.map((update) => (
-                  <div className="project-update-item" key={update.id}>
-                    <div className="project-update-meta">
-                      <span>{update.update_type}</span>
-                      <time>{new Date(update.created_at).toLocaleDateString()}</time>
-                    </div>
-
-                    <h3>{update.title}</h3>
-                    <p>{update.summary}</p>
-
-                    {update.completed_work && (
-                      <div className="project-update-detail">
-                        <strong>Completed:</strong>
-                        <p>{update.completed_work}</p>
-                      </div>
-                    )}
-
-                    {update.next_steps && (
-                      <div className="project-update-detail">
-                        <strong>Next:</strong>
-                        <p>{update.next_steps}</p>
-                      </div>
-                    )}
-
-                    {update.client_action_needed && (
-                      <div className="project-update-detail highlight">
-                        <strong>Action needed from you:</strong>
-                        <p>{update.client_action_needed}</p>
-                      </div>
-                    )}
-
-                    {update.blockers && (
-                      <div className="project-update-detail warning">
-                        <strong>Blockers:</strong>
-                        <p>{update.blockers}</p>
-                      </div>
-                    )}
-
-                    {update.estimated_completion && (
-                      <div className="project-update-detail">
-                        <strong>Timing:</strong>
-                        <p>{update.estimated_completion}</p>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+          <article className="portal-stat-card">
+            <div className="portal-stat-icon">☵</div>
+            <div>
+              <span>Messages</span>
+              <strong>{unreadMessages.length}</strong>
+              <p><i></i> Unread messages</p>
+            </div>
           </article>
 
-          <article className={`portal-card developer-status-card ${developerAtDesk ? "is-online" : "is-away"}`}>
-            <h2>Developer Status</h2>
-
-            <div className="developer-status-line">
-              <span className="developer-status-dot"></span>
-              <strong>{developerAtDesk ? "At desk" : "Away from desk"}</strong>
+          <article className="portal-stat-card">
+            <div className="portal-stat-icon">♢</div>
+            <div>
+              <span>Updates</span>
+              <strong>{latestUpdates.length}</strong>
+              <p><i></i> Recent updates</p>
             </div>
+          </article>
 
-            <p>
-              {developerAtDesk
-                ? "The developer is currently at his desk. Message me in your client portal for the fastest response."
-                : "The developer is currently away from his desk. Please call or send email for a timely response."}
-            </p>
-
-            <div className="portal-actions">
-              {developerAtDesk ? (
-                <Link className="portal-link" href="/client/messages">
-                  Message Me →
-                </Link>
-              ) : (
-                <>
-                  <a className="portal-link" href="tel:+17879074302">
-                    Call (787) 907-4302
-                  </a>
-
-                  <a className="portal-link" href="mailto:mediosaccesible@gmail.com">
-                    Send Email →
-                  </a>
-                </>
-              )}
+          <article className="portal-stat-card" id="billing">
+            <div className="portal-stat-icon">▣</div>
+            <div>
+              <span>Next Payment</span>
+              <strong>{monthlyTotal > 0 ? `$${monthlyTotal}` : "Pending"}</strong>
+              <p><i></i> Due date appears here</p>
             </div>
           </article>
         </div>
+
+        <div className="portal-content-grid">
+          <div className="portal-left-column">
+            <article className="portal-dashboard-panel" id="active-project">
+              <div className="portal-panel-head">
+                <h2>Your Active Project</h2>
+              </div>
+
+              {activeProject ? (
+                <div className="client-active-project-card">
+                  <div className="client-project-header">
+                    <div className="client-project-logo">◎</div>
+
+                    <div>
+                      <h3>{activeProject.title}</h3>
+                      <p>{activeProject.stage}</p>
+                    </div>
+
+                    <span className="portal-status-pill">{activeProject.status}</span>
+                  </div>
+
+                  <div className="client-project-progress-area">
+                    <div>
+                      <span>Progress</span>
+                      <strong>{activeProject.progress}%</strong>
+                    </div>
+
+                    <div className="portal-progress-bar">
+                      <span style={{ width: `${activeProject.progress}%` }}></span>
+                    </div>
+                  </div>
+
+                  <div className="project-data-grid">
+                    <div>
+                      <span>Project Status</span>
+                      <strong>{activeProject.stage}</strong>
+                    </div>
+
+                    <div>
+                      <span>Update Queue</span>
+                      <strong>{primaryUpdate?.title || "No update yet"}</strong>
+                    </div>
+
+                    <div>
+                      <span>Current Plan</span>
+                      <strong>
+                        {activeProject.monthly_price
+                          ? `$${activeProject.monthly_price}/mo`
+                          : activeProject.plan || "Active"}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <span>Preview Link</span>
+                      <strong>{activeProject.site_url ? "Ready" : "Pending"}</strong>
+                    </div>
+
+                    <div>
+                      <span>Next Steps</span>
+                      <strong>{primaryUpdate?.next_steps || "Waiting for update"}</strong>
+                    </div>
+
+                    <div>
+                      <span>Last Updated</span>
+                      <strong>{formatDate(primaryUpdate?.created_at)}</strong>
+                    </div>
+                  </div>
+
+                  <div className="portal-card-actions">
+                    {activeProject.site_url ? (
+                      <a href={activeProject.site_url} target="_blank" rel="noreferrer">
+                        View Project Details →
+                      </a>
+                    ) : (
+                      <Link href="/client/messages">View Project Details →</Link>
+                    )}
+
+                    <Link className="ghost" href="/client/messages">
+                      Request an Update ⟳
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <p>No projects have been assigned yet.</p>
+              )}
+            </article>
+
+            <article className="portal-dashboard-panel">
+              <div className="portal-panel-head">
+                <h2>Messages</h2>
+                <Link href="/client/messages">View all messages →</Link>
+              </div>
+
+              {unreadMessages.length === 0 ? (
+                <p>No unread messages.</p>
+              ) : (
+                <div className="portal-message-list">
+                  {unreadMessages.slice(0, 3).map((message) => (
+                    <Link href="/client/messages" className="portal-message-row" key={message.id}>
+                      <div className="portal-avatar">MA</div>
+
+                      <div>
+                        <strong>Medios Accesible</strong>
+                        <p>{message.body || "Project message received."}</p>
+                      </div>
+
+                      <time>{formatDate(message.created_at)}</time>
+                      <i></i>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              <Link className="portal-secondary-button" href="/client/messages">
+                Open All Messages →
+              </Link>
+            </article>
+
+            <article className="portal-dashboard-panel developer-portal-panel">
+              <h2>Developer Status</h2>
+
+              <div className="developer-status-layout">
+                <div className="developer-status-avatar">♙</div>
+
+                <div>
+                  <strong className={developerAtDesk ? "is-online" : "is-away"}>
+                    {developerAtDesk ? "At desk" : "Away from desk"}
+                  </strong>
+
+                  <p>
+                    {developerAtDesk
+                      ? "The developer is currently at his desk. Message me here in the client portal."
+                      : "The developer is currently away from his desk. Please call or send email for a timely response."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="portal-card-actions">
+                <a href="tel:+17879074302">Call (787) 907-4302</a>
+                <a className="ghost" href="mailto:mediosaccesible@gmail.com">Send Email</a>
+              </div>
+            </article>
+          </div>
+
+          <aside className="portal-right-column">
+            <article className="portal-dashboard-panel" id="project-updates">
+              <div className="portal-panel-head">
+                <h2>Project Updates</h2>
+                <a href="#project-updates">View all updates →</a>
+              </div>
+
+              {primaryUpdate ? (
+                <div className="portal-update-card">
+                  <div className="portal-update-meta">
+                    <span>{primaryUpdate.update_type}</span>
+                    <time>{formatDate(primaryUpdate.created_at)}</time>
+                  </div>
+
+                  <h3>{primaryUpdate.title}</h3>
+                  <p>{primaryUpdate.summary}</p>
+
+                  <div className="portal-update-detail">
+                    <strong>Completed:</strong>
+                    <p>{primaryUpdate.completed_work || "N/A"}</p>
+                  </div>
+
+                  <div className="portal-update-detail">
+                    <strong>Next:</strong>
+                    <p>{primaryUpdate.next_steps || "N/A"}</p>
+                  </div>
+
+                  <div className="portal-update-detail highlight">
+                    <strong>Action needed from you:</strong>
+                    <p>{primaryUpdate.client_action_needed || "N/A"}</p>
+                  </div>
+
+                  <div className="portal-update-detail warning">
+                    <strong>Blockers:</strong>
+                    <p>{primaryUpdate.blockers || "N/A"}</p>
+                  </div>
+
+                  <div className="portal-update-detail">
+                    <strong>Timing:</strong>
+                    <p>{primaryUpdate.estimated_completion || "Unknown at this time"}</p>
+                  </div>
+                </div>
+              ) : (
+                <p>No project updates posted yet.</p>
+              )}
+            </article>
+
+            <article className="portal-dashboard-panel" id="files">
+              <h2>Need Help?</h2>
+              <p>We&apos;re here to support you</p>
+
+              <div className="portal-help-list">
+                <a href="mailto:mediosaccesible@gmail.com">
+                  <span>✉</span>
+                  <div>
+                    <strong>Email</strong>
+                    <p>mediosaccesible@gmail.com</p>
+                  </div>
+                </a>
+
+                <a href="tel:+17879074302">
+                  <span>☏</span>
+                  <div>
+                    <strong>Phone</strong>
+                    <p>(787) 907-4302</p>
+                  </div>
+                </a>
+
+                <div>
+                  <span>◷</span>
+                  <div>
+                    <strong>Hours</strong>
+                    <p>Mon - Fri: 8:00am - 6:00pm</p>
+                  </div>
+                </div>
+              </div>
+
+              <a className="portal-secondary-button" href="mailto:mediosaccesible@gmail.com">
+                Contact Support →
+              </a>
+            </article>
+          </aside>
+        </div>
+
+        <footer className="portal-dashboard-footer">
+          © 2026 Medios Accesible. All rights reserved.
+        </footer>
       </section>
     </main>
   );
