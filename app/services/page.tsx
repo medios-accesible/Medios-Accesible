@@ -97,6 +97,35 @@ export default function ServicesPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  useEffect(() => {
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-code-build-card]")
+    );
+
+    if (cards.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const card = entry.target as HTMLElement;
+
+          if (entry.isIntersecting) {
+            card.classList.add("code-built");
+            observer.unobserve(card);
+          }
+        });
+      },
+      {
+        threshold: 0.36,
+        rootMargin: "0px 0px -12% 0px"
+      }
+    );
+
+    cards.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, [plans]);
+
   return (
     <main className="services-playground-page">
       <header className="site-header services-site-header">
@@ -199,9 +228,10 @@ export default function ServicesPage() {
           <div className="services-plan-grid-playground">
             {plans.map((plan, index) => (
               <button
-                className={`service-plan-tile-playground reveal ${
+                className={`service-plan-tile-playground code-build-card reveal ${
                   pressedPlanId === plan.id ? "touching" : ""
                 }`}
+                data-code-build-card
                 style={{ "--delay": `${index * 90}ms` } as React.CSSProperties}
                 type="button"
                 key={plan.id}
@@ -211,6 +241,14 @@ export default function ServicesPage() {
                 onPointerLeave={() => setPressedPlanId(null)}
                 onPointerCancel={() => setPressedPlanId(null)}
               >
+                <div className="code-build-overlay" aria-hidden="true">
+                  <span>{`const plan = "Tier ${plan.tier_number}";`}</span>
+                  <span>{`build("${plan.package_name}")`}</span>
+                  <span>{`price.monthly = ${plan.monthly_price};`}</span>
+                  <span>{`deploy.status = "ready";`}</span>
+                </div>
+
+                <div className="code-build-border" aria-hidden="true"></div>
                 <div className="tile-aurora"></div>
                 <div className="service-icon-playground">{getPlanIcon(plan.tier_number)}</div>
 
