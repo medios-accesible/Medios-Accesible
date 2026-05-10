@@ -4306,3 +4306,96 @@ textarea:focus {
     transform: translate3d(0, -10px, 60px) rotateX(4deg) scale(1.015) !important;
   }
 }
+
+/* =========================
+   ADD-ONS CODE BUILD FIX
+   Replaces the 3D parallax stack with the same code-build reveal used by the 5 plans.
+   Animation replays every time the card scrolls into view, up or down.
+========================= */
+
+.services-addons-playground {
+  perspective: none !important;
+}
+
+.addon-grid-playground {
+  transform-style: flat !important;
+}
+
+.addon-card-playground {
+  min-height: 245px;
+  transform: none !important;
+  animation: none !important;
+  filter: none;
+}
+
+.addon-card-playground:nth-child(n) {
+  transform: none !important;
+}
+
+.addon-card-playground::before,
+.addon-card-playground::after {
+  display: none !important;
+}
+
+.addon-card-playground:hover {
+  transform: translateY(-8px) scale(1.015) !important;
+  border-color: rgba(0, 234, 255, 0.55);
+  box-shadow:
+    0 22px 52px rgba(0, 0, 0, 0.38),
+    0 0 28px rgba(0, 234, 255, 0.16),
+    0 0 32px rgba(255, 45, 255, 0.1);
+  z-index: 5;
+}
+
+.addon-card-playground:hover h3,
+.addon-card-playground:hover strong,
+.addon-card-playground:hover p {
+  transform: none !important;
+}
+
+.addon-card-playground.code-build-card {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.addon-card-playground .addon-code-overlay {
+  inset: 16px;
+}
+
+.addon-card-playground .addon-code-overlay span {
+  font-size: 0.68rem;
+}
+
+.addon-card-playground.code-build-card:not(.code-built) h3,
+.addon-card-playground.code-build-card:not(.code-built) strong,
+.addon-card-playground.code-build-card:not(.code-built) p {
+  opacity: 0.14;
+  transform: translateY(14px) scale(0.985);
+  filter: blur(4px);
+}
+
+.addon-card-playground.code-build-card.code-built h3,
+.addon-card-playground.code-build-card.code-built strong,
+.addon-card-playground.code-build-card.code-built p {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: none;
+}
+
+.addon-card-playground.code-built h3 {
+  animation: codeContentResolve 0.58s cubic-bezier(.18,.9,.24,1) 0.58s both;
+}
+
+.addon-card-playground.code-built strong {
+  animation: codeContentResolve 0.58s cubic-bezier(.18,.9,.24,1) 0.7s both;
+}
+
+.addon-card-playground.code-built p {
+  animation: codeContentResolve 0.58s cubic-bezier(.18,.9,.24,1) 0.82s both;
+}
+
+@supports (animation-timeline: view()) {
+  .services-addons-playground .addon-card-playground {
+    animation: none !important;
+  }
+}
