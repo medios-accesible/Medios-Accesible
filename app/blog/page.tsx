@@ -98,9 +98,9 @@ export default function BlogPage() {
         <nav className="nav" aria-label="Blog navigation">
           <Link href="/">Home</Link>
           <Link href="/services">Services</Link>
-          <Link href="/#portfolio">Portfolio</Link>
+          <Link href="/portfolio">Portfolio</Link>
           <Link className="active" href="/blog">Blog</Link>
-          <Link href="/#contact">Contact</Link>
+          <Link href="/contact">Contact</Link>
         </nav>
 
         <Link className="login-btn" href="/login">
@@ -285,7 +285,7 @@ export default function BlogPage() {
           <Link href="/">Home</Link>
           <Link href="/services">Services</Link>
           <Link href="/blog">Blog</Link>
-          <Link href="/#contact">Contact</Link>
+          <Link href="/contact">Contact</Link>
         </div>
 
         <div>
