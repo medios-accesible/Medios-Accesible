@@ -98,34 +98,41 @@ export default function ServicesPage() {
   }, []);
 
   useEffect(() => {
-    const cards = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-code-build-card]")
-    );
+    let observer: IntersectionObserver | null = null;
 
-    if (cards.length === 0) return;
+    const timer = window.setTimeout(() => {
+      const cards = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-code-build-card]")
+      );
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const card = entry.target as HTMLElement;
+      if (cards.length === 0) return;
 
-          if (entry.isIntersecting) {
-            card.classList.add("code-built");
-          } else {
-            card.classList.remove("code-built");
-          }
-        });
-      },
-      {
-        threshold: 0.28,
-        rootMargin: "0px 0px -8% 0px"
-      }
-    );
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const card = entry.target as HTMLElement;
 
-    cards.forEach((card) => observer.observe(card));
+            if (entry.isIntersecting) {
+              card.classList.add("code-built");
+            } else {
+              card.classList.remove("code-built");
+            }
+          });
+        },
+        {
+          threshold: 0.18,
+          rootMargin: "0px 0px -4% 0px"
+        }
+      );
 
-    return () => observer.disconnect();
-  }, [plans]);
+      cards.forEach((card) => observer?.observe(card));
+    }, 50);
+
+    return () => {
+      window.clearTimeout(timer);
+      observer?.disconnect();
+    };
+  }, [plans, addons]);
 
   return (
     <main className="services-playground-page">
