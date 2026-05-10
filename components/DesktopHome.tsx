@@ -321,9 +321,9 @@ ${message}`);
           <a className="active" href="#home">
             Home
           </a>
-          <a href="#services">Services</a>
+          <a href="/services">Services</a>
           <a href="#portfolio">Portfolio</a>
-          <a href="#blog">Blog</a>
+          <a href="/blog">Blog</a>
           <a href="#contact">Contact</a>
         </nav>
 
@@ -359,7 +359,7 @@ ${message}`);
               </p>
 
               <div className="hero-actions">
-                <a className="btn btn-primary" href="#services">
+                <a className="btn btn-primary" href="/services">
                   {siteContent.hero.primaryButton} <span>→</span>
                 </a>
 
