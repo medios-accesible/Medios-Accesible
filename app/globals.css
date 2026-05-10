@@ -4112,3 +4112,197 @@ textarea:focus {
     font-size: 0.68rem;
   }
 }
+
+/* =========================
+   ADD-ONS 3D PARALLAX CARD STACK
+   Add-on cards feel stacked in depth, then spread into the grid on scroll/hover
+========================= */
+
+.services-addons-playground {
+  perspective: 1400px;
+  perspective-origin: 50% 20%;
+}
+
+.addon-grid-playground {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.addon-card-playground {
+  position: relative;
+  min-height: 245px;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity, filter;
+  transition:
+    transform 0.42s cubic-bezier(.18,.9,.24,1),
+    border-color 0.32s ease,
+    box-shadow 0.32s ease,
+    filter 0.32s ease;
+}
+
+/* Layered starting positions. Scroll animation resolves them into the normal grid. */
+.addon-card-playground:nth-child(4n + 1) {
+  transform: translate3d(28px, 36px, -160px) rotateX(10deg) rotateY(-12deg) scale(0.92);
+}
+
+.addon-card-playground:nth-child(4n + 2) {
+  transform: translate3d(-18px, 24px, -105px) rotateX(8deg) rotateY(9deg) scale(0.95);
+}
+
+.addon-card-playground:nth-child(4n + 3) {
+  transform: translate3d(14px, 12px, -54px) rotateX(5deg) rotateY(-6deg) scale(0.98);
+}
+
+.addon-card-playground:nth-child(4n + 4) {
+  transform: translate3d(-26px, 0, -12px) rotateX(3deg) rotateY(7deg) scale(1);
+}
+
+.addon-card-playground::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background:
+    linear-gradient(135deg, rgba(255, 45, 255, 0.22), transparent 35%, rgba(0, 234, 255, 0.2));
+  opacity: 0;
+  transition: opacity 0.32s ease;
+  pointer-events: none;
+}
+
+.addon-card-playground::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 22% 12%, rgba(255, 255, 255, 0.12), transparent 24%),
+    linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  opacity: 0;
+  transform: translateX(-30%);
+  transition:
+    opacity 0.32s ease,
+    transform 0.5s ease;
+  pointer-events: none;
+}
+
+.addon-card-playground:hover {
+  transform: translate3d(0, -18px, 120px) rotateX(7deg) rotateY(-8deg) scale(1.035) !important;
+  border-color: rgba(0, 234, 255, 0.58);
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.48),
+    0 0 34px rgba(0, 234, 255, 0.18),
+    0 0 38px rgba(255, 45, 255, 0.12);
+  filter: saturate(1.18);
+  z-index: 6;
+}
+
+.addon-card-playground:hover::before {
+  opacity: 1;
+}
+
+.addon-card-playground:hover::after {
+  opacity: 1;
+  transform: translateX(30%);
+}
+
+.addon-card-playground h3,
+.addon-card-playground strong,
+.addon-card-playground p {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.34s ease;
+}
+
+.addon-card-playground:hover h3 {
+  transform: translateZ(34px);
+}
+
+.addon-card-playground:hover strong {
+  transform: translateZ(26px);
+}
+
+.addon-card-playground:hover p {
+  transform: translateZ(18px);
+}
+
+@supports (animation-timeline: view()) {
+  .services-addons-playground .addon-card-playground {
+    animation: addonStackSpread both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 42%;
+  }
+
+  .services-addons-playground .addon-card-playground:nth-child(4n + 1) {
+    --stack-x: 28px;
+    --stack-y: 36px;
+    --stack-z: -160px;
+    --stack-rotate-x: 10deg;
+    --stack-rotate-y: -12deg;
+    --stack-scale: 0.92;
+  }
+
+  .services-addons-playground .addon-card-playground:nth-child(4n + 2) {
+    --stack-x: -18px;
+    --stack-y: 24px;
+    --stack-z: -105px;
+    --stack-rotate-x: 8deg;
+    --stack-rotate-y: 9deg;
+    --stack-scale: 0.95;
+  }
+
+  .services-addons-playground .addon-card-playground:nth-child(4n + 3) {
+    --stack-x: 14px;
+    --stack-y: 12px;
+    --stack-z: -54px;
+    --stack-rotate-x: 5deg;
+    --stack-rotate-y: -6deg;
+    --stack-scale: 0.98;
+  }
+
+  .services-addons-playground .addon-card-playground:nth-child(4n + 4) {
+    --stack-x: -26px;
+    --stack-y: 0px;
+    --stack-z: -12px;
+    --stack-rotate-x: 3deg;
+    --stack-rotate-y: 7deg;
+    --stack-scale: 1;
+  }
+
+  @keyframes addonStackSpread {
+    0% {
+      opacity: 0;
+      transform:
+        translate3d(var(--stack-x), calc(var(--stack-y) + 70px), var(--stack-z))
+        rotateX(var(--stack-rotate-x))
+        rotateY(var(--stack-rotate-y))
+        scale(var(--stack-scale));
+      filter: blur(10px);
+    }
+
+    42% {
+      opacity: 1;
+      filter: blur(0);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) scale(1);
+      filter: blur(0);
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .services-addons-playground {
+    perspective: 900px;
+  }
+
+  .addon-card-playground:nth-child(n) {
+    transform: translate3d(0, 28px, -60px) rotateX(8deg) scale(0.96);
+  }
+
+  .addon-card-playground:hover {
+    transform: translate3d(0, -10px, 60px) rotateX(4deg) scale(1.015) !important;
+  }
+}
