@@ -149,9 +149,9 @@ export default function ServicesPage() {
         <nav className="nav" aria-label="Services navigation">
           <Link href="/">Home</Link>
           <Link className="active" href="/services">Services</Link>
-          <Link href="/#portfolio">Portfolio</Link>
+          <Link href="/portfolio">Portfolio</Link>
           <Link href="/blog">Blog</Link>
-          <Link href="/#contact">Contact</Link>
+          <Link href="/contact">Contact</Link>
         </nav>
 
         <Link className="login-btn" href="/login">
@@ -189,7 +189,7 @@ export default function ServicesPage() {
               Explore Plans <span>→</span>
             </a>
 
-            <Link className="btn btn-secondary magnetic-button" href="/#contact">
+            <Link className="btn btn-secondary magnetic-button" href="/contact">
               Start a Project <span>&lt;/&gt;</span>
             </Link>
           </div>
@@ -365,7 +365,7 @@ export default function ServicesPage() {
           <p>Have a project in mind? Reach out and we’ll map out the best plan.</p>
         </div>
 
-        <Link className="btn btn-primary magnetic-button" href="/#contact">
+        <Link className="btn btn-primary magnetic-button" href="/contact">
           Get in Touch <span>→</span>
         </Link>
       </section>
@@ -389,7 +389,7 @@ export default function ServicesPage() {
           <Link href="/">Home</Link>
           <Link href="/services">Services</Link>
           <Link href="/blog">Blog</Link>
-          <Link href="/#contact">Contact</Link>
+          <Link href="/contact">Contact</Link>
         </div>
 
         <div>
@@ -509,7 +509,7 @@ export default function ServicesPage() {
             </div>
 
             <div className="service-modal-actions-playground">
-              <Link className="btn btn-primary" href="/#contact">
+              <Link className="btn btn-primary" href="/contact">
                 Start This Plan <span>→</span>
               </Link>
 
