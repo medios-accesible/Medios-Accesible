@@ -4399,3 +4399,39 @@ textarea:focus {
     animation: none !important;
   }
 }
+
+/* =========================
+   ADD-ONS VISIBILITY FIX
+   Keeps add-on cards visible while still replaying the code-build animation on scroll.
+========================= */
+
+.addon-card-playground.code-build-card {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+.addon-card-playground.code-build-card:not(.code-built) {
+  opacity: 1 !important;
+}
+
+.addon-card-playground.code-build-card:not(.code-built) .code-build-overlay {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+.addon-card-playground.code-build-card:not(.code-built) h3,
+.addon-card-playground.code-build-card:not(.code-built) strong,
+.addon-card-playground.code-build-card:not(.code-built) p {
+  opacity: 0.72;
+  transform: translateY(0) scale(1);
+  filter: none;
+}
+
+.addon-card-playground.code-build-card.code-built h3,
+.addon-card-playground.code-build-card.code-built strong,
+.addon-card-playground.code-build-card.code-built p {
+  opacity: 1;
+  visibility: visible;
+}
