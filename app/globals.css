@@ -2838,3 +2838,1065 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================
+   SERVICES ANIMATION PLAYGROUND
+========================= */
+
+.services-playground-page {
+  min-height: 100vh;
+  color: #fff;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255, 45, 255, 0.12), transparent 34%),
+    radial-gradient(circle at 82% 28%, rgba(0, 234, 255, 0.12), transparent 36%),
+    #02040c;
+  overflow-x: hidden;
+}
+
+.services-site-header {
+  background: rgba(2, 4, 12, 0.72);
+  backdrop-filter: blur(20px);
+}
+
+.services-hero-playground {
+  min-height: 690px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 120px 6vw 80px;
+  isolation: isolate;
+}
+
+.services-hero-playground::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 48%;
+  background: linear-gradient(180deg, transparent, #02040c 82%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.services-hero-art {
+  opacity: 0.88;
+  transform: scale(1.03);
+  animation: heroDrift 13s ease-in-out infinite alternate;
+}
+
+.services-code-canvas {
+  opacity: 0.42;
+  mix-blend-mode: screen;
+}
+
+.services-hero-content-playground {
+  position: relative;
+  z-index: 5;
+  width: min(100%, 1180px);
+  margin: 0 auto;
+}
+
+.services-hero-content-playground h1 {
+  max-width: 760px;
+  margin: 16px 0 24px;
+  font-size: clamp(3.4rem, 8.5vw, 8rem);
+  line-height: 0.86;
+  letter-spacing: -0.08em;
+  animation: heroTextIn 0.9s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.services-hero-content-playground p {
+  max-width: 640px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 1.08rem;
+  line-height: 1.72;
+  animation: heroTextIn 0.9s 0.12s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.kinetic-eyebrow {
+  animation: glitchPulse 4s ease-in-out infinite;
+}
+
+.floating-orb {
+  position: absolute;
+  z-index: 4;
+  border-radius: 999px;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+.orb-one {
+  width: 140px;
+  height: 140px;
+  left: 8%;
+  bottom: 18%;
+  background: radial-gradient(circle, rgba(255, 45, 255, 0.28), transparent 68%);
+  animation: floatOrb 8s ease-in-out infinite;
+}
+
+.orb-two {
+  width: 190px;
+  height: 190px;
+  right: 13%;
+  top: 18%;
+  background: radial-gradient(circle, rgba(0, 234, 255, 0.22), transparent 68%);
+  animation: floatOrb 11s ease-in-out infinite reverse;
+}
+
+.orb-three {
+  width: 90px;
+  height: 90px;
+  right: 34%;
+  bottom: 14%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.14), transparent 68%);
+  animation: floatOrbSmall 6s ease-in-out infinite;
+}
+
+.services-intro-strip {
+  width: 100%;
+  overflow: hidden;
+  padding: 14px 0;
+  border-block: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 38px;
+  animation: marqueeMove 28s linear infinite;
+}
+
+.marquee-track span {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.78rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+}
+
+.services-plans-playground,
+.services-process-playground,
+.services-addons-playground {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+
+.centered {
+  text-align: center;
+  justify-content: center;
+}
+
+.centered p {
+  margin-inline: auto;
+}
+
+.services-plan-grid-playground {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 34px;
+}
+
+.service-plan-tile-playground {
+  --delay: 0ms;
+  min-height: 270px;
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  overflow: hidden;
+  text-align: left;
+  padding: 26px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(circle at 15% 85%, rgba(255, 45, 255, 0.16), transparent 34%),
+    linear-gradient(180deg, rgba(14, 18, 42, 0.92), rgba(7, 10, 26, 0.94));
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition:
+    transform 0.32s cubic-bezier(.2,.8,.2,1),
+    border-color 0.32s ease,
+    box-shadow 0.32s ease,
+    filter 0.32s ease;
+  animation-delay: var(--delay);
+}
+
+.service-plan-tile-playground::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background:
+    linear-gradient(120deg, transparent 12%, rgba(255,255,255,0.18), transparent 26%),
+    linear-gradient(135deg, rgba(255,45,255,0.16), transparent, rgba(0,234,255,0.18));
+  opacity: 0;
+  transform: translateX(-55%);
+  transition: opacity 0.28s ease;
+}
+
+.service-plan-tile-playground::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+  background-size: 34px 34px;
+  opacity: 0.26;
+  mask-image: linear-gradient(180deg, #000, transparent);
+  pointer-events: none;
+}
+
+.service-plan-tile-playground:hover,
+.service-plan-tile-playground.touching {
+  transform: translateY(-10px) rotateX(4deg) rotateY(-3deg) scale(1.015);
+  border-color: rgba(0, 234, 255, 0.62);
+  box-shadow:
+    0 24px 58px rgba(0, 0, 0, 0.42),
+    0 0 34px rgba(0, 234, 255, 0.2),
+    0 0 42px rgba(255, 45, 255, 0.13);
+  filter: saturate(1.15);
+}
+
+.service-plan-tile-playground:hover::before,
+.service-plan-tile-playground.touching::before {
+  opacity: 1;
+  animation: cardShine 0.85s ease forwards;
+}
+
+.tile-aurora {
+  position: absolute;
+  inset: auto -20% -35% -20%;
+  height: 55%;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,45,255,0.22), transparent 35%),
+    radial-gradient(circle at 80% 20%, rgba(0,234,255,0.18), transparent 35%);
+  filter: blur(14px);
+  opacity: 0.65;
+  animation: auroraPulse 5s ease-in-out infinite;
+}
+
+.service-icon-playground,
+.process-icon-playground {
+  width: 66px;
+  height: 66px;
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 234, 255, 0.62);
+  background: rgba(255, 45, 255, 0.08);
+  color: var(--cyan);
+  font-size: 1.8rem;
+  font-weight: 950;
+  box-shadow:
+    inset 0 0 22px rgba(255, 45, 255, 0.12),
+    0 0 20px rgba(0, 234, 255, 0.16);
+  transition: transform 0.32s ease;
+}
+
+.service-plan-tile-playground:hover .service-icon-playground {
+  transform: translateZ(28px) rotate(-6deg) scale(1.08);
+}
+
+.service-tile-copy,
+.service-tile-price,
+.learn-more-playground {
+  position: relative;
+  z-index: 2;
+}
+
+.service-tile-copy span {
+  color: var(--cyan);
+  font-size: 0.74rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.service-tile-copy h3 {
+  margin: 8px 0;
+  font-size: 1.3rem;
+  line-height: 1.1;
+}
+
+.service-tile-copy p {
+  color: rgba(255, 255, 255, 0.68);
+  line-height: 1.55;
+}
+
+.service-tile-price {
+  display: flex;
+  align-items: end;
+  gap: 6px;
+}
+
+.service-tile-price strong {
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.service-tile-price small {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.learn-more-playground {
+  margin-top: auto;
+  color: var(--cyan);
+  font-weight: 850;
+}
+
+.learn-more-playground span {
+  color: var(--pink);
+  margin-left: 7px;
+  transition: margin-left 0.25s ease;
+}
+
+.service-plan-tile-playground:hover .learn-more-playground span {
+  margin-left: 13px;
+}
+
+.service-loading-card {
+  margin-top: 30px;
+  border-radius: 20px;
+  padding: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.process-row-playground {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  margin-top: 36px;
+}
+
+.process-card-playground {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 18px 12px;
+  border-radius: 18px;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.process-card-playground:hover {
+  transform: translateY(-7px);
+  background: rgba(255,255,255,0.035);
+}
+
+.process-card-playground > span {
+  color: rgba(255, 45, 255, 0.45);
+  font-size: 1.9rem;
+  font-weight: 950;
+}
+
+.process-card-playground h3 {
+  font-size: 1.05rem;
+}
+
+.process-card-playground p {
+  color: rgba(255, 255, 255, 0.66);
+  line-height: 1.55;
+}
+
+.addon-grid-playground {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.addon-card-playground {
+  --delay: 0ms;
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.028));
+  transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+  animation-delay: var(--delay);
+}
+
+.addon-card-playground:hover {
+  transform: translateY(-6px) scale(1.015);
+  border-color: rgba(255, 45, 255, 0.4);
+  box-shadow: 0 0 26px rgba(255, 45, 255, 0.11);
+}
+
+.addon-card-playground h3 {
+  margin-bottom: 8px;
+}
+
+.addon-card-playground strong {
+  color: var(--cyan);
+}
+
+.addon-card-playground p {
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.66);
+  line-height: 1.55;
+}
+
+.services-cta-playground {
+  width: min(100% - 48px, 1180px);
+  margin: 50px auto 56px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 34px 40px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.13);
+  background:
+    radial-gradient(circle at 5% 100%, rgba(255,45,255,0.18), transparent 30%),
+    radial-gradient(circle at 95% 0%, rgba(0,234,255,0.15), transparent 34%),
+    rgba(255,255,255,0.045);
+}
+
+.cta-line-art {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  height: 130px;
+  opacity: 0.32;
+  background:
+    linear-gradient(135deg, transparent 45%, rgba(0,234,255,0.9) 46%, transparent 48%),
+    linear-gradient(45deg, transparent 45%, rgba(255,45,255,0.9) 46%, transparent 48%);
+  animation: lineArtMove 5s ease-in-out infinite alternate;
+}
+
+.services-cta-playground > *:not(.cta-line-art) {
+  position: relative;
+  z-index: 2;
+}
+
+.services-cta-playground h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.services-cta-playground p {
+  margin-top: 10px;
+  color: rgba(255,255,255,0.66);
+}
+
+.services-footer-playground {
+  width: min(100% - 48px, 1180px);
+  margin: 0 auto;
+  padding: 48px 0 60px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 30px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.services-footer-playground h3 {
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+}
+
+.services-footer-playground a,
+.services-footer-playground p {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(255,255,255,0.66);
+}
+
+.service-modal-overlay-playground {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.service-modal-backdrop-playground {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(0,234,255,0.16), transparent 32%),
+    rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(16px);
+  animation: modalFadeIn 0.24s ease both;
+}
+
+.service-modal-card-playground {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 1040px);
+  max-height: min(86vh, 900px);
+  overflow-y: auto;
+  padding: 30px;
+  border-radius: 26px;
+  border: 1px solid rgba(0,234,255,0.32);
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255,45,255,0.16), transparent 34%),
+    radial-gradient(circle at 90% 10%, rgba(0,234,255,0.14), transparent 34%),
+    linear-gradient(180deg, rgba(12,17,36,0.98), rgba(5,8,20,0.98));
+  box-shadow:
+    0 30px 90px rgba(0,0,0,0.55),
+    0 0 60px rgba(0,234,255,0.13);
+  animation: modalBlast 0.42s cubic-bezier(.2,.9,.2,1) both;
+}
+
+.service-modal-close-playground {
+  position: sticky;
+  top: 0;
+  margin-left: auto;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 1.4rem;
+  z-index: 3;
+}
+
+.service-modal-head-playground {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 26px;
+  margin-bottom: 24px;
+}
+
+.service-modal-head-playground h2 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 0.94;
+  letter-spacing: -0.06em;
+  margin: 8px 0 12px;
+}
+
+.service-modal-head-playground p {
+  max-width: 680px;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.6;
+}
+
+.service-modal-price-playground {
+  text-align: right;
+}
+
+.service-modal-price-playground strong {
+  display: block;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 0.9;
+  color: var(--cyan);
+}
+
+.service-modal-price-playground span {
+  color: rgba(255,255,255,0.58);
+}
+
+.service-modal-grid-playground {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.service-modal-grid-playground section,
+.service-modal-finance-playground div {
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.045);
+}
+
+.service-modal-grid-playground h3 {
+  margin-bottom: 14px;
+  color: var(--cyan);
+}
+
+.service-modal-grid-playground ul {
+  display: grid;
+  gap: 10px;
+  padding-left: 18px;
+  color: rgba(255,255,255,0.76);
+  line-height: 1.5;
+}
+
+.service-modal-finance-playground {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.service-modal-finance-playground span {
+  display: block;
+  color: rgba(255,255,255,0.58);
+  margin-bottom: 6px;
+}
+
+.service-modal-finance-playground strong {
+  color: var(--cyan);
+}
+
+.service-modal-actions-playground {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+
+.magnetic-button {
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
+}
+
+.magnetic-button:hover {
+  transform: translateY(-3px) scale(1.025);
+}
+
+@keyframes heroDrift {
+  from { transform: scale(1.03) translate3d(0, 0, 0); }
+  to { transform: scale(1.08) translate3d(2%, -1%, 0); }
+}
+
+@keyframes heroTextIn {
+  from { opacity: 0; transform: translateY(22px) scale(0.98); filter: blur(8px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes glitchPulse {
+  0%, 92%, 100% { text-shadow: 0 0 0 transparent; transform: translateX(0); }
+  94% { text-shadow: 2px 0 var(--pink), -2px 0 var(--cyan); transform: translateX(1px); }
+  96% { text-shadow: -2px 0 var(--pink), 2px 0 var(--cyan); transform: translateX(-1px); }
+}
+
+@keyframes floatOrb {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(18px, -28px, 0) scale(1.08); }
+}
+
+@keyframes floatOrbSmall {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-18px, 20px, 0) scale(1.12); }
+}
+
+@keyframes marqueeMove {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes cardShine {
+  from { transform: translateX(-70%); }
+  to { transform: translateX(70%); }
+}
+
+@keyframes auroraPulse {
+  0%, 100% { opacity: 0.42; transform: translateY(0); }
+  50% { opacity: 0.82; transform: translateY(-8px); }
+}
+
+@keyframes lineArtMove {
+  from { transform: translateX(-16px) scale(1); opacity: 0.22; }
+  to { transform: translateX(10px) scale(1.08); opacity: 0.4; }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalBlast {
+  from {
+    opacity: 0;
+    transform: translateY(34px) scale(0.86);
+    filter: blur(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .services-plans-playground .reveal,
+  .services-process-playground .reveal,
+  .services-addons-playground .reveal,
+  .services-cta-playground.reveal {
+    animation: scrollPop both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 34%;
+  }
+
+  @keyframes scrollPop {
+    from {
+      opacity: 0;
+      transform: translateY(38px) scale(0.96);
+      filter: blur(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+}
+
+@media (max-width: 1000px) {
+  .services-plan-grid-playground,
+  .addon-grid-playground {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .process-row-playground,
+  .service-modal-grid-playground,
+  .service-modal-finance-playground,
+  .services-footer-playground {
+    grid-template-columns: 1fr;
+  }
+
+  .service-modal-head-playground {
+    display: grid;
+  }
+
+  .service-modal-price-playground {
+    text-align: left;
+  }
+}
+
+@media (max-width: 700px) {
+  .services-hero-playground {
+    min-height: 620px;
+    padding: 105px 22px 70px;
+  }
+
+  .services-plan-grid-playground,
+  .addon-grid-playground {
+    grid-template-columns: 1fr;
+  }
+
+  .services-cta-playground {
+    display: grid;
+    padding: 26px;
+  }
+
+  .service-modal-card-playground {
+    padding: 22px;
+    border-radius: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .services-playground-page *,
+  .services-playground-page *::before,
+  .services-playground-page *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================
+   UNIQUE SERVICE MODAL ANIMATIONS
+   Each tier opens with a different visual behavior
+========================= */
+
+.service-modal-card-playground {
+  overflow: hidden;
+}
+
+.service-modal-card-playground > *:not(.modal-fx) {
+  position: relative;
+  z-index: 3;
+}
+
+.modal-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.modal-fx-blocks,
+.modal-fx-binary,
+.modal-fx-scan,
+.modal-fx-grid,
+.modal-fx-bloom {
+  display: none;
+}
+
+/* Tier 1: building blocks assemble the modal */
+.modal-build-blocks {
+  animation: modalBlocksEnter 0.72s cubic-bezier(.16,.84,.28,1) both;
+}
+
+.modal-build-blocks .modal-fx-blocks {
+  display: block;
+}
+
+.modal-build-blocks .modal-fx-blocks span {
+  position: absolute;
+  width: 24%;
+  height: 22%;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 234, 255, 0.22);
+  background:
+    linear-gradient(135deg, rgba(255, 45, 255, 0.16), rgba(0, 234, 255, 0.11));
+  box-shadow: 0 0 22px rgba(0, 234, 255, 0.12);
+  animation: blockTileDrop 0.78s cubic-bezier(.18,.89,.32,1.18) both;
+}
+
+.modal-build-blocks .modal-fx-blocks span:nth-child(1) { left: 4%; top: 5%; animation-delay: 0ms; }
+.modal-build-blocks .modal-fx-blocks span:nth-child(2) { left: 31%; top: 5%; animation-delay: 55ms; }
+.modal-build-blocks .modal-fx-blocks span:nth-child(3) { left: 58%; top: 5%; animation-delay: 110ms; }
+.modal-build-blocks .modal-fx-blocks span:nth-child(4) { left: 72%; top: 31%; animation-delay: 165ms; }
+.modal-build-blocks .modal-fx-blocks span:nth-child(5) { left: 5%; top: 42%; animation-delay: 220ms; }
+.modal-build-blocks .modal-fx-blocks span:nth-child(6) { left: 33%; top: 48%; animation-delay: 275ms; }
+.modal-build-blocks .modal-fx-blocks span:nth-child(7) { left: 61%; top: 58%; animation-delay: 330ms; }
+.modal-build-blocks .modal-fx-blocks span:nth-child(8) { left: 18%; top: 74%; animation-delay: 385ms; }
+
+/* Tier 2: binary sheet flips like shutters */
+.modal-binary-shutter {
+  animation: modalShutterShell 0.48s ease both;
+}
+
+.modal-binary-shutter .modal-fx-binary {
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+}
+
+.modal-binary-shutter .modal-fx-binary span {
+  display: flex;
+  align-items: center;
+  padding-left: 24px;
+  color: rgba(0, 234, 255, 0.42);
+  font: 900 1.1rem/1 "Courier New", monospace;
+  letter-spacing: 0.35em;
+  border-bottom: 1px solid rgba(0, 234, 255, 0.08);
+  background:
+    linear-gradient(90deg, rgba(0, 234, 255, 0.13), rgba(255, 45, 255, 0.1)),
+    rgba(2, 6, 18, 0.94);
+  transform-origin: top;
+  animation: binaryShutterReveal 0.72s cubic-bezier(.16,.84,.28,1) both;
+}
+
+.modal-binary-shutter .modal-fx-binary span:nth-child(1) { animation-delay: 0ms; }
+.modal-binary-shutter .modal-fx-binary span:nth-child(2) { animation-delay: 70ms; }
+.modal-binary-shutter .modal-fx-binary span:nth-child(3) { animation-delay: 140ms; }
+.modal-binary-shutter .modal-fx-binary span:nth-child(4) { animation-delay: 210ms; }
+.modal-binary-shutter .modal-fx-binary span:nth-child(5) { animation-delay: 280ms; }
+.modal-binary-shutter .modal-fx-binary span:nth-child(6) { animation-delay: 350ms; }
+
+/* Tier 3: neon scanner wipes the modal into view */
+.modal-neon-scan {
+  animation: modalScanEnter 0.62s cubic-bezier(.2,.9,.2,1) both;
+}
+
+.modal-neon-scan .modal-fx-scan {
+  display: block;
+  background:
+    linear-gradient(90deg, transparent, rgba(0, 234, 255, 0.28), rgba(255, 255, 255, 0.22), rgba(255, 45, 255, 0.26), transparent);
+  width: 32%;
+  left: -40%;
+  filter: blur(2px);
+  animation: neonScanSweep 0.95s ease both;
+}
+
+/* Tier 4: glitch grid locks into place */
+.modal-glitch-grid {
+  animation: modalGlitchEnter 0.6s steps(5, end) both;
+}
+
+.modal-glitch-grid .modal-fx-grid {
+  display: block;
+  opacity: 0.28;
+  background:
+    linear-gradient(rgba(255, 45, 255, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 234, 255, 0.16) 1px, transparent 1px);
+  background-size: 26px 26px;
+  animation: glitchGridLock 0.7s steps(6, end) both;
+}
+
+/* Tier 5: portal bloom expands behind premium plan */
+.modal-portal-bloom {
+  animation: modalBloomEnter 0.72s cubic-bezier(.13,.9,.2,1) both;
+}
+
+.modal-portal-bloom .modal-fx-bloom {
+  display: block;
+  inset: 50% auto auto 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.3) 0 5%, rgba(0,234,255,0.24) 12%, rgba(255,45,255,0.19) 33%, transparent 72%);
+  box-shadow:
+    0 0 70px rgba(0, 234, 255, 0.25),
+    0 0 90px rgba(255, 45, 255, 0.18);
+  animation: portalBloom 0.9s cubic-bezier(.13,.9,.2,1) both;
+}
+
+@keyframes modalBlocksEnter {
+  from {
+    opacity: 0;
+    transform: perspective(900px) rotateX(14deg) translateY(44px) scale(0.82);
+    filter: blur(12px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(900px) rotateX(0) translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes blockTileDrop {
+  0% {
+    opacity: 0;
+    transform: translate3d(var(--x, 0), -220px, 0) rotate(18deg) scale(0.6);
+  }
+  72% {
+    opacity: 0.8;
+    transform: translate3d(0, 8px, 0) rotate(-2deg) scale(1.02);
+  }
+  100% {
+    opacity: 0.16;
+    transform: translate3d(0, 0, 0) rotate(0) scale(1);
+  }
+}
+
+@keyframes modalShutterShell {
+  from {
+    opacity: 0;
+    transform: scaleX(0.78) scaleY(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1) scaleY(1);
+  }
+}
+
+@keyframes binaryShutterReveal {
+  0% {
+    opacity: 1;
+    transform: rotateX(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: rotateX(-88deg);
+  }
+}
+
+@keyframes modalScanEnter {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+    filter: blur(10px);
+  }
+  48% {
+    opacity: 1;
+    clip-path: inset(0 24% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    filter: blur(0);
+  }
+}
+
+@keyframes neonScanSweep {
+  0% {
+    transform: translateX(0) skewX(-10deg);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(460%) skewX(-10deg);
+    opacity: 0;
+  }
+}
+
+@keyframes modalGlitchEnter {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px) skewX(8deg);
+    filter: hue-rotate(80deg) blur(8px);
+  }
+  25% {
+    opacity: 0.7;
+    transform: translateX(18px) skewX(-7deg);
+  }
+  50% {
+    opacity: 0.45;
+    transform: translateX(-9px) skewX(4deg);
+  }
+  75% {
+    opacity: 0.9;
+    transform: translateX(5px) skewX(-2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) skewX(0);
+    filter: hue-rotate(0deg) blur(0);
+  }
+}
+
+@keyframes glitchGridLock {
+  0% {
+    transform: translate(18px, -14px) scale(1.08);
+    opacity: 0.62;
+  }
+  35% {
+    transform: translate(-14px, 10px) scale(1.03);
+  }
+  70% {
+    transform: translate(7px, -5px) scale(1.01);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.18;
+  }
+}
+
+@keyframes modalBloomEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.72);
+    filter: blur(16px) saturate(1.5);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0) saturate(1);
+  }
+}
+
+@keyframes portalBloom {
+  0% {
+    width: 30px;
+    height: 30px;
+    opacity: 0.9;
+  }
+  65% {
+    width: 1500px;
+    height: 1500px;
+    opacity: 0.45;
+  }
+  100% {
+    width: 1200px;
+    height: 1200px;
+    opacity: 0.12;
+  }
+}
