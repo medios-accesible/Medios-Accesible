@@ -86,10 +86,21 @@ export default function ServicesPage() {
     loadServices();
   }, []);
 
+  function closeSelectedPlan() {
+    setSelectedPlan(null);
+    setPressedPlanId(null);
+
+    window.requestAnimationFrame(() => {
+      document
+        .querySelectorAll<HTMLElement>("[data-code-build-card]")
+        .forEach((card) => card.classList.add("code-built"));
+    });
+  }
+
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setSelectedPlan(null);
+        closeSelectedPlan();
       }
     }
 
@@ -114,8 +125,6 @@ export default function ServicesPage() {
 
             if (entry.isIntersecting) {
               card.classList.add("code-built");
-            } else {
-              card.classList.remove("code-built");
             }
           });
         },
@@ -370,33 +379,17 @@ export default function ServicesPage() {
         </Link>
       </section>
 
-      <footer className="services-footer-playground">
-        <div>
-          <Link className="brand" href="/">
-            <img
-              className="brand-logo-img"
-              src={siteContent.brand.logo}
-              alt="Medios Accesible logo"
-            />
-            <span>{siteContent.brand.name}</span>
-          </Link>
+      <footer className="services-footer-playground services-footer-simple">
+        <Link className="services-footer-logo-only" href="/" aria-label="Medios Accesible Home">
+          <img
+            src={siteContent.brand.logo}
+            alt="Medios Accesible logo"
+          />
+        </Link>
 
-          <p>Custom code. Clear systems. Real growth.</p>
-        </div>
-
-        <div>
-          <h3>Company</h3>
-          <Link href="/">Home</Link>
-          <Link href="/services">Services</Link>
-          <Link href="/blog">Blog</Link>
-          <Link href="/contact">Contact</Link>
-        </div>
-
-        <div>
-          <h3>Connect</h3>
-          <a href="mailto:mediosaccesible@gmail.com">mediosaccesible@gmail.com</a>
-          <a href="tel:+17879074302">(787) 907-4302</a>
-        </div>
+        <p className="services-footer-copyright">
+          © 2021 Medios Accesible. All rights reserved.
+        </p>
       </footer>
 
       {selectedPlan && (
@@ -404,7 +397,7 @@ export default function ServicesPage() {
           <button
             className="service-modal-backdrop-playground"
             type="button"
-            onClick={() => setSelectedPlan(null)}
+            onClick={closeSelectedPlan}
             aria-label="Close service details"
           />
 
@@ -440,7 +433,7 @@ export default function ServicesPage() {
             <button
               className="service-modal-close-playground"
               type="button"
-              onClick={() => setSelectedPlan(null)}
+              onClick={closeSelectedPlan}
               aria-label="Close modal"
             >
               ×
@@ -516,7 +509,7 @@ export default function ServicesPage() {
               <button
                 className="btn btn-secondary"
                 type="button"
-                onClick={() => setSelectedPlan(null)}
+                onClick={closeSelectedPlan}
               >
                 Close
               </button>
