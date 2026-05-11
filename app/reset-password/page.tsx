@@ -29,7 +29,7 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    setMessage("Password reset email sent. Check your inbox.");
+    setMessage("Password reset email sent. Check your inbox and open the reset link.");
   }
 
   return (
