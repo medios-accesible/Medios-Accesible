@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import CodeRain from "./CodeRain";
 import { siteContent } from "../data/siteContent";
 
@@ -52,7 +53,41 @@ const blogCards = [
   }
 ];
 
+const mobileLinks = [
+  { label: "Home", href: "/" },
+  { label: "Services", href: "/services" },
+  { label: "Portfolio", href: "/portfolio" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
+  { label: "Client Portal", href: "/login" }
+];
+
 export default function MobileHome() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
+  useEffect(() => {
+    document.body.classList.toggle("mobile-drawer-is-open", menuOpen);
+
+    return () => {
+      document.body.classList.remove("mobile-drawer-is-open");
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, []);
+
   return (
     <main className="mobile-home-page">
       <section className="mobile-hero-shell" id="home">
@@ -64,12 +99,55 @@ export default function MobileHome() {
             <img src={mobileLogo} alt="Medios Accesible logo" />
           </Link>
 
-          <nav className="mobile-menu-pill" aria-label="Mobile navigation">
-            <Link href="/services">Services</Link>
-            <Link href="/portfolio">Work</Link>
-            <Link href="/login">Portal</Link>
-          </nav>
+          <button
+            className="mobile-hamburger-btn"
+            type="button"
+            aria-label="Open mobile menu"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-drawer-menu"
+            onClick={() => setMenuOpen(true)}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
         </header>
+
+        <div
+          className={`mobile-menu-backdrop ${menuOpen ? "is-open" : ""}`}
+          onClick={closeMenu}
+          aria-hidden="true"
+        ></div>
+
+        <aside
+          id="mobile-drawer-menu"
+          className={`mobile-drawer-menu ${menuOpen ? "is-open" : ""}`}
+          aria-hidden={!menuOpen}
+        >
+          <div className="mobile-drawer-head">
+            <img src={mobileLogo} alt="Medios Accesible logo" />
+
+            <button type="button" aria-label="Close mobile menu" onClick={closeMenu}>
+              ×
+            </button>
+          </div>
+
+          <nav className="mobile-drawer-nav" aria-label="Mobile menu links">
+            {mobileLinks.map((item) => (
+              <Link href={item.href} key={item.href} onClick={closeMenu}>
+                <span>{item.label}</span>
+                <b>→</b>
+              </Link>
+            ))}
+          </nav>
+
+          <div className="mobile-drawer-cta">
+            <p>Ready to start?</p>
+            <Link href="/contact" onClick={closeMenu}>
+              Start a Project →
+            </Link>
+          </div>
+        </aside>
 
         <div className="mobile-hero-copy">
           <span className="mobile-kicker">{siteContent.hero.eyebrow}</span>
