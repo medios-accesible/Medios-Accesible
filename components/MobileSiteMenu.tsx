@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const mobileLinks = [
   { label: "Home", href: "/" },
@@ -13,6 +14,7 @@ const mobileLinks = [
 ];
 
 export default function MobileSiteMenu() {
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
   function closeMenu() {
@@ -37,6 +39,10 @@ export default function MobileSiteMenu() {
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, []);
+
+  if (pathname.startsWith("/client")) {
+    return null;
+  }
 
   return (
     <>
