@@ -1,213 +1,541 @@
 "use client";
 
 import Link from "next/link";
-import CodeRain from "./CodeRain";
-import { siteContent } from "../data/siteContent";
+import { useEffect, useState } from "react";
+import CodeRain from "../../components/CodeRain";
+import { siteContent } from "../../data/siteContent";
+import { supabase } from "../../lib/supabaseClient";
 
-const mobileHero =
-  "https://res.cloudinary.com/dovrzmlqj/image/upload/v1778475871/hero-my-site-mobile_dtccoq.png";
+type ServicePlan = {
+  id: string;
+  tier_number: number;
+  package_name: string;
+  primary_purpose: string | null;
+  monthly_price: number;
+  annual_price: number | null;
+  buyout_price: number | null;
+  reduced_buyout_price: number | null;
+  included_services: string[] | null;
+  limits: string[] | null;
+  is_active: boolean;
+  sort_order: number;
+};
 
-const portfolioCards = [
-  {
-    title: "Neon Commerce",
-    type: "E-Commerce",
-    image:
-      "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=900&q=80"
-  },
-  {
-    title: "Client Portal",
-    type: "Dashboard",
-    image:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80"
-  },
-  {
-    title: "Growth Website",
-    type: "Website",
-    image:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80"
+type ServiceAddon = {
+  id: string;
+  name: string;
+  price_label: string;
+  description: string | null;
+  is_active: boolean;
+  sort_order: number;
+};
+
+function getPlanIcon(tier: number) {
+  if (tier === 1) return "</>";
+  if (tier === 2) return "◎";
+  if (tier === 3) return "▣";
+  if (tier === 4) return "✦";
+  return "◆";
+}
+
+function getModalAnimationClass(tier: number) {
+  if (tier === 1) return "modal-build-blocks";
+  if (tier === 2) return "modal-binary-shutter";
+  if (tier === 3) return "modal-neon-scan";
+  if (tier === 4) return "modal-glitch-grid";
+  return "modal-portal-bloom";
+}
+
+function formatMoney(value: number | null) {
+  if (value === null || value === undefined) return "Custom";
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0
+  }).format(value);
+}
+
+export default function ServicesPage() {
+  const [plans, setPlans] = useState<ServicePlan[]>([]);
+  const [addons, setAddons] = useState<ServiceAddon[]>([]);
+  const [selectedPlan, setSelectedPlan] = useState<ServicePlan | null>(null);
+  const [builtCardKeys, setBuiltCardKeys] = useState<Set<string>>(() => new Set());
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadServices() {
+      const { data: planData } = await supabase
+        .from("service_plans")
+        .select(
+          "id, tier_number, package_name, primary_purpose, monthly_price, annual_price, buyout_price, reduced_buyout_price, included_services, limits, is_active, sort_order"
+        )
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+
+      const { data: addonData } = await supabase
+        .from("service_addons")
+        .select("id, name, price_label, description, is_active, sort_order")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+
+      setPlans((planData || []) as ServicePlan[]);
+      setAddons((addonData || []) as ServiceAddon[]);
+      setLoading(false);
+    }
+
+    loadServices();
+  }, []);
+
+  function closeSelectedPlan() {
+    setSelectedPlan(null);
+
+    setBuiltCardKeys((previousKeys) => {
+      const nextKeys = new Set(previousKeys);
+      plans.forEach((plan) => nextKeys.add(`plan-${plan.id}`));
+      addons.forEach((addon) => nextKeys.add(`addon-${addon.id}`));
+      return nextKeys;
+    });
   }
-];
 
-const blogCards = [
-  {
-    title: "Why custom code makes your brand feel premium",
-    category: "Strategy",
-    image:
-      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80"
-  },
-  {
-    title: "How a client portal builds trust",
-    category: "Systems",
-    image:
-      "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=900&q=80"
-  },
-  {
-    title: "Simple SEO wins for service businesses",
-    category: "SEO",
-    image:
-      "https://images.unsplash.com/photo-1432888622747-4eb9a8f2c293?auto=format&fit=crop&w=900&q=80"
-  }
-];
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        closeSelectedPlan();
+      }
+    }
 
-export default function MobileHome() {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    let observer: IntersectionObserver | null = null;
+
+    const timer = window.setTimeout(() => {
+      const cards = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-code-build-card]")
+      );
+
+      if (cards.length === 0) return;
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          const visibleKeys: string[] = [];
+
+          entries.forEach((entry) => {
+            const card = entry.target as HTMLElement;
+            const cardKey = card.dataset.codeBuildKey;
+
+            if (entry.isIntersecting && cardKey) {
+              visibleKeys.push(cardKey);
+            }
+          });
+
+          if (visibleKeys.length > 0) {
+            setBuiltCardKeys((previousKeys) => {
+              let changed = false;
+              const nextKeys = new Set(previousKeys);
+
+              visibleKeys.forEach((key) => {
+                if (!nextKeys.has(key)) {
+                  nextKeys.add(key);
+                  changed = true;
+                }
+              });
+
+              return changed ? nextKeys : previousKeys;
+            });
+          }
+        },
+        {
+          threshold: 0.18,
+          rootMargin: "0px 0px -4% 0px"
+        }
+      );
+
+      cards.forEach((card) => observer?.observe(card));
+    }, 50);
+
+    return () => {
+      window.clearTimeout(timer);
+      observer?.disconnect();
+    };
+  }, [plans, addons]);
+
   return (
-    <main className="mobile-home-page">
-      <section className="mobile-hero-shell" id="home">
-        <img className="mobile-hero-bg" src={mobileHero} alt="" />
-        <CodeRain className="mobile-code-rain" />
+    <main className="services-playground-page">
+      <header className="site-header services-site-header">
+        <Link className="brand" href="/" aria-label="Medios Accesible Home">
+          <img
+            className="brand-logo-img"
+            src={siteContent.brand.logo}
+            alt="Medios Accesible logo"
+          />
+          <span>{siteContent.brand.name}</span>
+        </Link>
 
-        <div className="mobile-hero-copy">
-          <span className="mobile-kicker">{siteContent.hero.eyebrow}</span>
+        <nav className="nav" aria-label="Services navigation">
+          <Link href="/">Home</Link>
+          <Link className="active" href="/services">Services</Link>
+          <Link href="/portfolio">Portfolio</Link>
+          <Link href="/blog">Blog</Link>
+          <Link href="/contact">Contact</Link>
+        </nav>
+
+        <Link className="login-btn" href="/login">
+          Open Portal ⊗
+        </Link>
+      </header>
+
+      <section className="services-hero-playground">
+        <img className="hero-bg-image services-hero-art" src={siteContent.hero.backgroundImage} alt="" />
+        <CodeRain className="hero-canvas services-code-canvas" />
+
+        <div className="floating-orb orb-one"></div>
+        <div className="floating-orb orb-two"></div>
+        <div className="floating-orb orb-three"></div>
+
+        <div className="services-hero-content-playground">
+          <div className="eyebrow kinetic-eyebrow">
+            Custom code. Clear systems. Real growth.
+          </div>
+
           <h1>
-            Your business deserves more than <strong>a template.</strong>
+            Services Built
+            <br />
+            for <span className="gradient-text">Real Results.</span>
           </h1>
-          <p>{siteContent.hero.description}</p>
 
-          <div className="mobile-hero-actions">
-            <Link className="mobile-primary-btn" href="/services">
-              View Services <span>→</span>
+          <p>
+            We build custom-coded websites, digital systems, SEO-ready structures,
+            client portals, content workflows, and online growth systems with
+            transparent service from planning to launch.
+          </p>
+
+          <div className="hero-actions">
+            <a className="btn btn-primary magnetic-button" href="#plans">
+              Explore Plans <span>→</span>
+            </a>
+
+            <Link className="btn btn-secondary magnetic-button" href="/contact">
+              Start a Project <span>&lt;/&gt;</span>
             </Link>
-            <Link className="mobile-ghost-btn" href="/portfolio">
-              See Work
-            </Link>
           </div>
         </div>
       </section>
 
-      <section className="mobile-section mobile-feature-strip">
-        <div className="mobile-section-heading">
-          <span>What we build</span>
-          <h2>Custom digital systems that feel alive.</h2>
-        </div>
-
-        <div className="mobile-feature-grid">
-          {siteContent.features.slice(0, 4).map((feature) => (
-            <article className="mobile-feature-card" key={feature.title}>
-              <div className="mobile-card-icon">✦</div>
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="mobile-section mobile-plans-section">
-        <div className="mobile-section-heading">
-          <span>{siteContent.pricingIntro.kicker}</span>
-          <h2>{siteContent.pricingIntro.title}</h2>
-          <p>{siteContent.pricingIntro.description}</p>
-        </div>
-
-        <div className="mobile-horizontal-scroll" aria-label="Service plans">
-          {siteContent.pricing.map((plan) => (
-            <article className="mobile-plan-card" key={plan.name}>
-              {plan.popular && <span className="mobile-popular-badge">Popular</span>}
-              <h3>{plan.name}</h3>
-              <p>{plan.subtitle}</p>
-              <strong>
-                {plan.price}
-                <small>{plan.term}</small>
-              </strong>
-              <ul>
-                {plan.items.slice(0, 3).map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-              <Link href="/services">View Plan →</Link>
-            </article>
-          ))}
+      <section className="services-intro-strip">
+        <div className="marquee-track">
+          <span>Websites</span>
+          <span>SEO</span>
+          <span>Portals</span>
+          <span>Dashboards</span>
+          <span>Content</span>
+          <span>Automation</span>
+          <span>Growth</span>
+          <span>Websites</span>
+          <span>SEO</span>
+          <span>Portals</span>
+          <span>Dashboards</span>
+          <span>Content</span>
+          <span>Automation</span>
+          <span>Growth</span>
         </div>
       </section>
 
-      <section className="mobile-section mobile-portfolio-preview">
-        <div className="mobile-section-heading split">
+      <section className="services-plans-playground" id="plans">
+        <div className="section-head centered reveal">
           <div>
-            <span>Portfolio</span>
-            <h2>Recent style direction.</h2>
+            <div className="kicker">Monthly Website Plans</div>
+            <h2>Choose the level of support your business needs.</h2>
           </div>
-          <Link href="/portfolio">View all</Link>
+
+          <p>
+            Tap any plan to open a full animated breakdown with included services,
+            limits, annual pricing, and website buyout details.
+          </p>
         </div>
 
-        <div className="mobile-horizontal-scroll" aria-label="Portfolio previews">
-          {portfolioCards.map((project) => (
-            <article className="mobile-image-card" key={project.title}>
-              <img src={project.image} alt="" />
-              <div>
-                <span>{project.type}</span>
-                <h3>{project.title}</h3>
+        {loading ? (
+          <article className="service-loading-card">
+            <p>Loading services...</p>
+          </article>
+        ) : (
+          <div className="services-plan-grid-playground">
+            {plans.map((plan, index) => (
+              <button
+                className={`service-plan-tile-playground code-build-card reveal ${
+                  builtCardKeys.has(`plan-${plan.id}`) ? "code-built" : ""
+                }`}
+                data-code-build-card
+                data-code-build-key={`plan-${plan.id}`}
+                style={{ "--delay": `${index * 90}ms` } as React.CSSProperties}
+                type="button"
+                key={plan.id}
+                onClick={() => setSelectedPlan(plan)}
+              >
+                <div className="code-build-overlay" aria-hidden="true">
+                  <span>{`const plan = "Tier ${plan.tier_number}";`}</span>
+                  <span>{`build("${plan.package_name}")`}</span>
+                  <span>{`price.monthly = ${plan.monthly_price};`}</span>
+                  <span>{`deploy.status = "ready";`}</span>
+                </div>
+
+                <div className="code-build-border" aria-hidden="true"></div>
+                <div className="tile-aurora"></div>
+                <div className="service-icon-playground">{getPlanIcon(plan.tier_number)}</div>
+
+                <div className="service-tile-copy">
+                  <span>Tier {plan.tier_number}</span>
+                  <h3>{plan.package_name}</h3>
+                  <p>{plan.primary_purpose}</p>
+                </div>
+
+                <div className="service-tile-price">
+                  <strong>{formatMoney(plan.monthly_price)}</strong>
+                  <small>/month</small>
+                </div>
+
+                <div className="learn-more-playground">
+                  View Details <span>→</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="services-process-playground">
+        <div className="section-head centered reveal">
+          <div>
+            <div className="kicker">Our Process</div>
+            <h2>Simple. Transparent. Effective.</h2>
+          </div>
+        </div>
+
+        <div className="process-row-playground">
+          <article className="process-card-playground reveal">
+            <span>01</span>
+            <div className="process-icon-playground">▱</div>
+            <h3>Discover</h3>
+            <p>We learn about your business, goals, audience, services, and challenges.</p>
+          </article>
+
+          <article className="process-card-playground reveal">
+            <span>02</span>
+            <div className="process-icon-playground">▦</div>
+            <h3>Plan</h3>
+            <p>We map out the right package, pages, features, workflow, and roadmap.</p>
+          </article>
+
+          <article className="process-card-playground reveal">
+            <span>03</span>
+            <div className="process-icon-playground">&lt;/&gt;</div>
+            <h3>Build</h3>
+            <p>We build your site or system with clean code and modern structure.</p>
+          </article>
+
+          <article className="process-card-playground reveal">
+            <span>04</span>
+            <div className="process-icon-playground">↗</div>
+            <h3>Launch & Support</h3>
+            <p>We launch, monitor, update, maintain, and support your growth.</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="services-addons-playground">
+        <div className="section-head reveal">
+          <div>
+            <div className="kicker">Add-ons</div>
+            <h2>Extra services when the project needs more.</h2>
+          </div>
+
+          <p>
+            Add-ons are billed separately and only included when approved in writing.
+          </p>
+        </div>
+
+        <div className="addon-grid-playground">
+          {addons.map((addon, index) => (
+            <article
+              className={`addon-card-playground code-build-card reveal ${
+                builtCardKeys.has(`addon-${addon.id}`) ? "code-built" : ""
+              }`}
+              data-code-build-card
+              data-code-build-key={`addon-${addon.id}`}
+              style={{ "--delay": `${index * 45}ms` } as React.CSSProperties}
+              key={addon.id}
+            >
+              <div className="code-build-overlay addon-code-overlay" aria-hidden="true">
+                <span>{`const addon = "${addon.name}";`}</span>
+                <span>{`pricing = "${addon.price_label}";`}</span>
+                <span>{`status = "available";`}</span>
+                <span>{`render.addOnCard();`}</span>
               </div>
+
+              <div className="code-build-border" aria-hidden="true"></div>
+
+              <h3>{addon.name}</h3>
+              <strong>{addon.price_label}</strong>
+              {addon.description && <p>{addon.description}</p>}
             </article>
           ))}
         </div>
       </section>
 
-      <section className="mobile-section mobile-portal-preview-card">
-        <span>Client Portal</span>
-        <h2>Transparency after launch.</h2>
-        <p>
-          Clients can track project stages, requests, messages, updates, and active
-          support from one clean portal experience.
-        </p>
+      <section className="services-cta-playground reveal">
+        <div className="cta-line-art"></div>
 
-        <div className="mobile-portal-metrics">
-          <div>
-            <strong>82%</strong>
-            <span>Project progress</span>
-          </div>
-          <div>
-            <strong>Live</strong>
-            <span>Developer status</span>
-          </div>
+        <div>
+          <div className="kicker">Ready to get started?</div>
+          <h2>Let’s build something great together.</h2>
+          <p>Have a project in mind? Reach out and we’ll map out the best plan.</p>
         </div>
 
-        <Link className="mobile-primary-btn" href="/login">
-          Open Portal <span>→</span>
+        <Link className="btn btn-primary magnetic-button" href="/contact">
+          Get in Touch <span>→</span>
         </Link>
       </section>
 
-      <section className="mobile-section mobile-blog-preview">
-        <div className="mobile-section-heading split">
-          <div>
-            <span>Blog</span>
-            <h2>Ideas for growth.</h2>
-          </div>
-          <Link href="/blog">Read</Link>
-        </div>
-
-        <div className="mobile-blog-list">
-          {blogCards.map((blog) => (
-            <article className="mobile-blog-card" key={blog.title}>
-              <img src={blog.image} alt="" />
-              <div>
-                <span>{blog.category}</span>
-                <h3>{blog.title}</h3>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="mobile-section mobile-contact-cta">
-        <span>Ready?</span>
-        <h2>Let&apos;s build something custom for your business.</h2>
-        <p>
-          Email us or start with the contact form. We&apos;ll map the best plan before
-          anything is built.
-        </p>
-        <Link className="mobile-primary-btn" href="/contact">
-          Start a Project <span>→</span>
-        </Link>
-      </section>
-
-      <footer className="mobile-footer mobile-footer-simple">
-        <Link className="mobile-footer-logo-only" href="/" aria-label="Medios Accesible Home">
-          <img src={siteContent.brand.logo} alt="Medios Accesible logo" />
+      <footer className="services-footer-playground services-footer-simple">
+        <Link className="services-footer-logo-only" href="/" aria-label="Medios Accesible Home">
+          <img
+            src={siteContent.brand.logo}
+            alt="Medios Accesible logo"
+          />
         </Link>
 
-        <p className="mobile-footer-copyright">
+        <p className="services-footer-copyright">
           © 2021 Medios Accesible. All rights reserved.
         </p>
       </footer>
+
+      {selectedPlan && (
+        <div className="service-modal-overlay-playground" role="dialog" aria-modal="true">
+          <button
+            className="service-modal-backdrop-playground"
+            type="button"
+            onClick={closeSelectedPlan}
+            aria-label="Close service details"
+          />
+
+          <article
+            className={`service-modal-card-playground ${getModalAnimationClass(
+              selectedPlan.tier_number
+            )}`}
+          >
+            <div className="modal-fx modal-fx-blocks" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <div className="modal-fx modal-fx-binary" aria-hidden="true">
+              <span>01001001</span>
+              <span>10110110</span>
+              <span>00110101</span>
+              <span>11100010</span>
+              <span>01011100</span>
+              <span>10010111</span>
+            </div>
+
+            <div className="modal-fx modal-fx-scan" aria-hidden="true"></div>
+            <div className="modal-fx modal-fx-grid" aria-hidden="true"></div>
+            <div className="modal-fx modal-fx-bloom" aria-hidden="true"></div>
+
+            <button
+              className="service-modal-close-playground"
+              type="button"
+              onClick={closeSelectedPlan}
+              aria-label="Close modal"
+            >
+              ×
+            </button>
+
+            <div className="service-modal-head-playground">
+              <div>
+                <p className="portal-kicker">Tier {selectedPlan.tier_number}</p>
+                <h2>{selectedPlan.package_name}</h2>
+                <p>{selectedPlan.primary_purpose}</p>
+              </div>
+
+              <div className="service-modal-price-playground">
+                <strong>{formatMoney(selectedPlan.monthly_price)}</strong>
+                <span>/month</span>
+              </div>
+            </div>
+
+            <div className="service-modal-grid-playground">
+              <section>
+                <h3>Included Services</h3>
+                <ul>
+                  {(selectedPlan.included_services || []).map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </section>
+
+              <section>
+                <h3>Limits / Exclusions</h3>
+                <ul>
+                  {(selectedPlan.limits || []).map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </section>
+            </div>
+
+            <div className="service-modal-finance-playground">
+              <div>
+                <span>Annual upfront</span>
+                <strong>
+                  {selectedPlan.annual_price
+                    ? formatMoney(selectedPlan.annual_price)
+                    : "Not listed"}
+                </strong>
+              </div>
+
+              <div>
+                <span>Standard buyout</span>
+                <strong>
+                  {selectedPlan.buyout_price
+                    ? formatMoney(selectedPlan.buyout_price)
+                    : "Not listed"}
+                </strong>
+              </div>
+
+              <div>
+                <span>Buyout after 12 months</span>
+                <strong>
+                  {selectedPlan.reduced_buyout_price
+                    ? formatMoney(selectedPlan.reduced_buyout_price)
+                    : "Not listed"}
+                </strong>
+              </div>
+            </div>
+
+            <div className="service-modal-actions-playground">
+              <Link className="btn btn-primary" href="/contact">
+                Start This Plan <span>→</span>
+              </Link>
+
+              <button
+                className="btn btn-secondary"
+                type="button"
+                onClick={closeSelectedPlan}
+              >
+                Close
+              </button>
+            </div>
+          </article>
+        </div>
+      )}
     </main>
   );
 }
