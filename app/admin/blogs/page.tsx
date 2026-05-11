@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import AdminMobileNav from "../../../components/AdminMobileNav";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabaseClient";
@@ -473,6 +474,7 @@ export default function AdminBlogsPage() {
           </article>
         </div>
       </section>
+          <AdminMobileNav />
     </main>
   );
 }
