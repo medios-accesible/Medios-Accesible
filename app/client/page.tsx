@@ -13,6 +13,7 @@ type Profile = {
   full_name: string | null;
   company_name: string | null;
   role: "admin" | "client";
+  avatar_url: string | null;
 };
 
 type Project = {
@@ -72,6 +73,16 @@ function getGreetingName(profile: Profile | null) {
   return profile?.full_name || profile?.company_name || "Client";
 }
 
+function getInitials(profile: Profile | null) {
+  const source = profile?.full_name || profile?.company_name || profile?.email || "Client";
+  return source
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
 export default function ClientDashboardPage() {
   const router = useRouter();
 
@@ -102,7 +113,7 @@ export default function ClientDashboardPage() {
 
       const { data: profileData } = await supabase
         .from("profiles")
-        .select("id, email, full_name, company_name, role")
+        .select("id, email, full_name, company_name, role, avatar_url")
         .eq("id", userId)
         .single();
 
@@ -201,10 +212,20 @@ export default function ClientDashboardPage() {
         </header>
 
         <section className="client-app-hero-card">
-          <div>
-            <p className="client-app-kicker">Client Portal</p>
-            <h1>Welcome back, {getGreetingName(profile)}</h1>
-            <p>{profile?.email}</p>
+          <div className="client-app-profile-row">
+            <div className="client-app-profile-avatar" aria-hidden="true">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="" />
+              ) : (
+                <span>{getInitials(profile)}</span>
+              )}
+            </div>
+
+            <div>
+              <p className="client-app-kicker">Client Portal</p>
+              <h1>Welcome back, {getGreetingName(profile)}</h1>
+              <p>{profile?.email}</p>
+            </div>
           </div>
 
           <div className={`client-app-presence ${developerAtDesk ? "is-online" : "is-away"}`}>
