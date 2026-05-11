@@ -3051,6 +3051,7 @@ textarea:focus {
 }
 
 .service-plan-tile-playground:hover,
+.service-plan-tile-playground:active,
 .service-plan-tile-playground.touching {
   transform: translateY(-10px) rotateX(4deg) rotateY(-3deg) scale(1.015);
   border-color: rgba(0, 234, 255, 0.62);
@@ -3062,6 +3063,7 @@ textarea:focus {
 }
 
 .service-plan-tile-playground:hover::before,
+.service-plan-tile-playground:active::before,
 .service-plan-tile-playground.touching::before {
   opacity: 1;
   animation: cardShine 0.85s ease forwards;
@@ -8333,5 +8335,21 @@ textarea:focus {
   .services-footer-copyright {
     max-width: 28ch;
     font-size: 0.86rem !important;
+  }
+}
+
+
+/* =========================================================
+   SERVICE MOBILE SCROLL BLUR FIX
+   React now owns the code-built class. This keeps cards sharp
+   when users drag the horizontal plan carousel on mobile.
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .services-plan-grid-playground .service-plan-tile-playground.code-built > *:not(.code-build-overlay):not(.code-build-border):not(.tile-aurora),
+  .addon-grid-playground .addon-card-playground.code-built > *:not(.code-build-overlay):not(.code-build-border):not(.tile-aurora) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: none;
   }
 }
