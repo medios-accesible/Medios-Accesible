@@ -8278,3 +8278,78 @@ textarea:focus {
     border-radius: 17px;
   }
 }
+
+/* =========================================================
+   SERVICES MOBILE PLAN + FOOTER CLEANUP
+   Fixes plan cards staying blurred after modal close and simplifies services footer.
+   ========================================================= */
+
+.services-footer-playground.services-footer-simple {
+  width: min(100% - 48px, 1180px);
+  margin: 0 auto;
+  padding: 56px 0 72px;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.services-footer-logo-only {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.services-footer-logo-only img {
+  display: block;
+  width: clamp(190px, 28vw, 320px);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 26px rgba(0, 229, 255, 0.22));
+}
+
+.services-footer-copyright {
+  margin: 0 !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .services-playground-page .code-build-card:not(.code-built) > *:not(.code-build-overlay):not(.code-build-border):not(.tile-aurora) {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .services-playground-page .code-build-card:not(.code-built) .code-build-overlay {
+    opacity: 0 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .services-playground-page .code-build-card:not(.code-built) .code-build-border::before,
+  .services-playground-page .code-build-card:not(.code-built) .code-build-border::after {
+    opacity: 0 !important;
+    animation: none !important;
+  }
+
+  .services-footer-playground.services-footer-simple {
+    width: calc(100% - 32px) !important;
+    padding: 46px 0 58px !important;
+    gap: 14px !important;
+  }
+
+  .services-footer-logo-only img {
+    width: min(72vw, 260px) !important;
+  }
+
+  .services-footer-copyright {
+    max-width: 28ch;
+    font-size: 0.86rem !important;
+  }
+}
