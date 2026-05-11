@@ -1,4 +1,3 @@
-
 :root {
   --bg: #02040c;
   --black: #03040a;
@@ -8461,7 +8460,8 @@ textarea:focus {
   }
 }
 /* =========================================================
-   CLIENT PORTAL APP-STYLE MOBILE REDESIGN
+   ADMIN MOBILE APP REDESIGN
+   Bottom nav: Services/Pricing, Clients, Home, Messenger, Blog
    ========================================================= */
 
 .sr-only {
@@ -8476,893 +8476,498 @@ textarea:focus {
   border: 0;
 }
 
-.client-app-page {
-  min-height: 100svh;
-  padding: 16px 16px 104px;
-  color: #fff;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(0, 229, 255, 0.18), transparent 34%),
-    radial-gradient(circle at 90% 24%, rgba(181, 108, 255, 0.18), transparent 34%),
-    linear-gradient(180deg, #05000d 0%, #070019 48%, #020006 100%);
-  overflow-x: hidden;
-}
-
-.client-app-page a {
-  text-decoration: none;
-}
-
-.client-app-shell {
-  width: min(100%, 760px);
-  margin: 0 auto;
-  display: grid;
-  gap: 16px;
-}
-
-.client-app-loading-card,
-.client-app-hero-card,
-.client-app-progress-card,
-.client-app-update-card,
-.client-app-list-card,
-.client-app-chat-card,
-.client-app-settings-card,
-.client-app-upload-card,
-.client-app-presence-card,
-.client-app-tutorial-card {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045)),
-    rgba(6, 0, 18, 0.82);
-  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.32), inset 0 0 36px rgba(0, 229, 255, 0.055);
-  backdrop-filter: blur(18px);
-}
-
-.client-app-loading-card {
-  display: grid;
-  min-height: 220px;
-  place-items: center;
-  border-radius: 30px;
-}
-
-.client-app-topbar,
-.client-app-page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.client-app-topbar {
-  padding: 2px 0 4px;
-}
-
-.client-return-site-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 42px;
-  padding: 0 14px;
-  border: 1px solid rgba(0, 229, 255, 0.18);
-  border-radius: 999px;
-  color: #79f3ff;
-  background: rgba(0, 229, 255, 0.07);
-  font-size: 0.82rem;
-  font-weight: 900;
-}
-
-.client-settings-link,
-.client-app-page-header > a {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 16px;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 22px rgba(0, 229, 255, 0.1);
-  font-weight: 900;
-}
-
-.client-app-hero-card,
-.client-app-progress-card,
-.client-app-update-card,
-.client-app-list-card,
-.client-app-chat-card,
-.client-app-settings-card,
-.client-app-upload-card {
-  border-radius: 30px;
-  padding: 20px;
-}
-
-.client-app-hero-card {
-  display: grid;
-  gap: 16px;
-  background:
-    radial-gradient(circle at 100% 0%, rgba(181, 108, 255, 0.22), transparent 36%),
-    radial-gradient(circle at 0% 100%, rgba(0, 229, 255, 0.18), transparent 35%),
-    rgba(6, 0, 18, 0.86);
-}
-
-.client-app-kicker {
-  width: fit-content;
-  margin: 0 0 8px;
-  padding: 7px 10px;
-  border: 1px solid rgba(0, 229, 255, 0.2);
-  border-radius: 999px;
-  color: #79f3ff;
-  background: rgba(0, 229, 255, 0.08);
-  font-size: 0.66rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.client-app-hero-card h1,
-.client-app-page-header h1,
-.client-app-progress-card h2,
-.client-app-update-card h2,
-.client-app-list-card h2,
-.client-app-tutorial-card h2 {
-  margin: 0;
-  font-size: clamp(1.8rem, 8vw, 3.1rem);
-  line-height: 0.96;
-  letter-spacing: -0.06em;
-  text-transform: uppercase;
-}
-
-.client-app-hero-card p,
-.client-app-page-header p,
-.client-app-progress-copy p,
-.client-app-update-card p,
-.client-app-empty-state,
-.client-app-list-card p,
-.client-app-tutorial-card p,
-.client-app-upload-card p,
-.client-app-settings-card p {
-  margin: 8px 0 0;
-  color: rgba(255, 255, 255, 0.68);
-  line-height: 1.55;
-}
-
-.client-app-presence,
-.client-app-presence-card {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  width: fit-content;
-  min-height: 38px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 0.82rem;
-  font-weight: 900;
-}
-
-.client-app-presence span,
-.client-app-presence-card span {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: #ffcc66;
-  box-shadow: 0 0 14px rgba(255, 204, 102, 0.6);
-}
-
-.client-app-presence.is-online span,
-.client-app-presence-card.is-online span {
-  background: #00ff88;
-  box-shadow: 0 0 14px rgba(0, 255, 136, 0.65);
-}
-
-.client-app-presence-card {
-  width: 100%;
-  border-radius: 24px;
-  padding: 14px 16px;
-}
-
-.client-app-tutorial-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  min-height: 48px;
-  width: 100%;
-  border: 1px solid rgba(0, 229, 255, 0.16);
-  border-radius: 999px;
-  color: #79f3ff;
-  background: rgba(0, 229, 255, 0.075);
-  font-weight: 900;
-}
-
-.client-app-tutorial-button span:first-child {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  color: #05000d;
-  background: linear-gradient(135deg, #00e5ff, #ffffff 45%, #b56cff);
-}
-
-.client-app-tutorial-overlay,
-.client-app-tutorial-backdrop {
-  position: fixed;
-  inset: 0;
-}
-
-.client-app-tutorial-overlay {
-  z-index: 300;
-  display: grid;
-  place-items: end center;
-  padding: 18px;
-}
-
-.client-app-tutorial-backdrop {
-  background: rgba(0, 0, 0, 0.64);
-  backdrop-filter: blur(10px);
-}
-
-.client-app-tutorial-card {
-  position: relative;
-  z-index: 1;
-  width: min(100%, 420px);
-  padding: 24px;
-  border-radius: 32px;
-}
-
-.client-app-tutorial-close {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  font-size: 1.5rem;
-}
-
-.client-app-tutorial-icon {
-  display: grid;
-  place-items: center;
-  width: 60px;
-  height: 60px;
-  margin-bottom: 16px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, #00e5ff, #ffffff 42%, #b56cff);
-  color: #05000d;
-  font-size: 1.7rem;
-}
-
-.client-app-tutorial-progress {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 7px;
-  margin: 20px 0;
-}
-
-.client-app-tutorial-progress span {
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.client-app-tutorial-progress span.is-active {
-  background: #79f3ff;
-  box-shadow: 0 0 12px rgba(0, 229, 255, 0.45);
-}
-
-.client-app-card-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.client-app-card-head > strong,
-.client-app-billing-grid article strong {
-  color: transparent;
-  background: linear-gradient(135deg, #00e5ff, #ffffff 40%, #b56cff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  font-size: 1.8rem;
-  line-height: 1;
-}
-
-.client-app-progress-ring-area {
-  display: grid;
-  grid-template-columns: 118px 1fr;
-  gap: 16px;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.client-app-progress-ring {
-  --progress: 0%;
-  display: grid;
-  place-items: center;
-  width: 112px;
-  height: 112px;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle, rgba(7, 0, 18, 0.96) 56%, transparent 57%),
-    conic-gradient(#00e5ff var(--progress), rgba(255, 255, 255, 0.12) 0);
-  box-shadow: 0 0 30px rgba(0, 229, 255, 0.18);
-}
-
-.client-app-progress-ring span {
-  font-size: 1.35rem;
-  font-weight: 1000;
-}
-
-.client-app-progress-copy span {
-  color: #79f3ff;
-  font-size: 0.75rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.client-app-progress-copy h3 {
-  margin: 6px 0 0;
-  font-size: 1.25rem;
-  line-height: 1.05;
-}
-
-.client-app-quick-grid,
-.client-app-action-grid,
-.client-app-billing-grid {
-  display: grid;
-  gap: 12px;
-}
-
-.client-app-quick-grid,
-.client-app-billing-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.client-app-mini-card,
-.client-app-action-grid a,
-.client-app-billing-grid article,
-.client-app-record-row,
-.client-app-file-card {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: inset 0 0 28px rgba(0, 229, 255, 0.035);
-}
-
-.client-app-mini-card {
-  min-height: 132px;
-  padding: 16px;
-  border-radius: 26px;
-}
-
-.client-app-mini-card span {
-  display: block;
-  margin-bottom: 14px;
-  font-size: 1.45rem;
-}
-
-.client-app-mini-card strong {
-  display: block;
-  font-size: 1.5rem;
-}
-
-.client-app-mini-card p {
-  margin: 4px 0 0;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 0.82rem;
-}
-
-.client-app-update-stack,
-.client-app-record-list,
-.client-app-file-grid {
-  display: grid;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.client-app-update-stack > div {
-  padding: 14px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.client-app-update-stack strong {
-  color: #fff;
-  font-size: 0.86rem;
-}
-
-.client-app-update-stack p {
-  margin-top: 6px;
-  font-size: 0.88rem;
-}
-
-.client-app-update-stack .is-highlighted {
-  border-color: rgba(0, 229, 255, 0.22);
-  background: rgba(0, 229, 255, 0.08);
-}
-
-.client-app-action-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.client-app-action-grid.is-three {
-  grid-template-columns: 1fr;
-}
-
-.client-app-action-grid a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 58px;
-  padding: 0 14px;
-  border-radius: 20px;
-  font-weight: 900;
-}
-
-.client-app-signout,
-.client-app-primary-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 50px;
-  width: 100%;
-  border-radius: 999px;
-  color: #05000d;
-  background: linear-gradient(135deg, #00e5ff, #ffffff 45%, #b56cff);
-  font-weight: 1000;
-  box-shadow: 0 0 24px rgba(0, 229, 255, 0.24);
-}
-
-.client-app-signout {
-  color: rgba(255, 255, 255, 0.76);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
-}
-
-.client-app-page-header {
-  margin-bottom: 2px;
-}
-
-.client-app-page-header h1 {
-  margin-bottom: 6px;
-}
-
-.client-app-chat-shell {
-  min-height: calc(100svh - 120px);
-}
-
-.client-app-chat-card {
-  min-height: 45svh;
-  padding: 16px;
-}
-
-.client-app-message-thread {
-  display: grid;
-  gap: 12px;
-}
-
-.client-app-message-bubble {
-  max-width: 84%;
-  padding: 12px 14px;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.client-app-message-bubble.is-client {
-  justify-self: end;
-  color: #05000d;
-  background: linear-gradient(135deg, #00e5ff, #ffffff 45%, #b56cff);
-}
-
-.client-app-message-bubble.is-admin {
-  justify-self: start;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.client-app-message-bubble > span {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 0.72rem;
-  font-weight: 1000;
-  opacity: 0.72;
-}
-
-.client-app-message-bubble p {
-  margin: 0;
-  line-height: 1.45;
-}
-
-.client-app-message-bubble time {
-  display: block;
-  margin-top: 8px;
-  font-size: 0.68rem;
-  opacity: 0.65;
-}
-
-.client-app-message-bubble img {
-  max-width: 220px;
-  margin-top: 8px;
-  border-radius: 16px;
-}
-
-.client-app-composer {
-  position: sticky;
-  bottom: 88px;
-  z-index: 20;
-  display: grid;
-  grid-template-columns: 44px 1fr 44px;
-  gap: 8px;
-  align-items: end;
-  padding: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  background: rgba(5, 0, 14, 0.86);
-  backdrop-filter: blur(18px);
-}
-
-.client-app-photo-button,
-.client-app-composer button {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  color: #05000d;
-  background: #fff;
-  font-weight: 1000;
-}
-
-.client-app-photo-button input {
+.admin-mobile-bottom-nav {
   display: none;
 }
 
-.client-app-composer textarea {
-  min-height: 44px;
-  max-height: 120px;
-  padding: 12px 4px;
-  border: 0;
-  outline: none;
-  resize: none;
-  color: #fff;
-  background: transparent;
-  font-size: 16px;
-}
-
-.client-app-composer button {
-  background: linear-gradient(135deg, #00e5ff, #b56cff);
-}
-
-.client-app-file-chip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 18px;
-  background: rgba(0, 229, 255, 0.08);
-  color: #79f3ff;
-  font-size: 0.84rem;
-}
-
-.client-app-upload-card {
-  display: grid;
-  place-items: center;
-  min-height: 184px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.client-app-upload-card input {
-  display: none;
-}
-
-.client-app-upload-card > span,
-.client-app-avatar-upload > span {
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
-  margin-bottom: 12px;
-  border-radius: 22px;
-  color: #05000d;
-  background: linear-gradient(135deg, #00e5ff, #ffffff 45%, #b56cff);
-  font-size: 1.55rem;
-  font-weight: 1000;
-}
-
-.client-app-file-card,
-.client-app-record-row {
-  display: grid;
-  grid-template-columns: 42px 1fr auto;
-  gap: 12px;
-  align-items: center;
-  min-height: 74px;
-  padding: 12px;
-  border-radius: 20px;
-}
-
-.client-app-file-card > span,
-.client-app-record-row > span {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 16px;
-  background: rgba(0, 229, 255, 0.1);
-}
-
-.client-app-file-card strong,
-.client-app-record-row strong {
-  display: block;
-  overflow-wrap: anywhere;
-}
-
-.client-app-file-card p,
-.client-app-record-row p {
-  margin: 4px 0 0;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.8rem;
-}
-
-.client-app-record-row b {
-  color: #79f3ff;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-
-.client-app-billing-grid article {
-  min-height: 130px;
-  padding: 16px;
-  border-radius: 24px;
-}
-
-.client-app-billing-grid article span {
-  display: block;
-  margin-bottom: 18px;
-  color: rgba(255, 255, 255, 0.66);
-  font-size: 0.78rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.client-app-settings-card {
-  display: grid;
-  gap: 14px;
-}
-
-.client-app-settings-card label:not(.client-app-avatar-upload) {
-  display: grid;
-  gap: 8px;
-}
-
-.client-app-settings-card label > span {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.78rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.client-app-settings-card input {
-  width: 100%;
-  min-height: 50px;
-  padding: 0 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
-  outline: none;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.07);
-  font-size: 16px;
-}
-
-.client-app-settings-card input:disabled {
-  opacity: 0.62;
-}
-
-.client-app-avatar-upload {
-  display: grid;
-  place-items: center;
-  min-height: 164px;
-  border: 1px dashed rgba(0, 229, 255, 0.28);
-  border-radius: 24px;
-  background: rgba(0, 229, 255, 0.055);
-  text-align: center;
-}
-
-.client-app-avatar-upload input {
-  display: none;
-}
-
-.client-app-bottom-nav {
-  position: fixed;
-  left: 50%;
-  bottom: max(12px, env(safe-area-inset-bottom));
-  z-index: 220;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  width: min(calc(100% - 24px), 440px);
-  padding: 8px;
-  transform: translateX(-50%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 28px;
-  background: rgba(5, 0, 14, 0.86);
-  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.44), inset 0 0 32px rgba(0, 229, 255, 0.05);
-  backdrop-filter: blur(22px);
-}
-
-.client-app-nav-item {
-  display: grid;
-  place-items: center;
-  min-width: 0;
-  height: 48px;
-  border-radius: 20px;
-  color: rgba(255, 255, 255, 0.74);
-  background: rgba(255, 255, 255, 0.035);
-  font-size: 1.25rem;
-  transition: transform 160ms ease, background 160ms ease, color 160ms ease;
-}
-
-.client-app-nav-item.is-home {
-  height: 58px;
-  margin-top: -12px;
-  border: 1px solid rgba(0, 229, 255, 0.26);
-  border-radius: 22px;
-  color: #05000d;
-  background: linear-gradient(135deg, #00e5ff, #ffffff 40%, #b56cff);
-  box-shadow: 0 0 24px rgba(0, 229, 255, 0.28);
-  font-size: 1.4rem;
-}
-
-.client-app-nav-item.is-active:not(.is-home) {
-  color: #79f3ff;
-  background: rgba(0, 229, 255, 0.1);
-  box-shadow: inset 0 0 20px rgba(0, 229, 255, 0.06);
-}
-
-.client-app-nav-item:active {
-  transform: scale(0.96);
-}
-
-@media (min-width: 769px) {
-  .client-app-page {
-    padding-top: 28px;
+@media (max-width: 768px) {
+  .admin-mobile-bottom-nav {
+    position: fixed;
+    left: 14px;
+    right: 14px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+    z-index: 1200;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: center;
+    gap: 8px;
+    min-height: 72px;
+    padding: 10px;
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.12), transparent 52%),
+      rgba(5, 0, 14, 0.88);
+    backdrop-filter: blur(22px);
+    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.48), 0 0 30px rgba(0, 229, 255, 0.11);
   }
 
-  .client-app-billing-grid,
-  .client-app-quick-grid,
-  .client-app-action-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .client-app-action-grid.is-three {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 420px) {
-  .client-app-page {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
-  .client-app-progress-ring-area {
-    grid-template-columns: 96px 1fr;
-    gap: 12px;
-  }
-
-  .client-app-progress-ring {
-    width: 92px;
-    height: 92px;
-  }
-
-  .client-app-bottom-nav {
-    width: min(calc(100% - 18px), 420px);
-    gap: 4px;
-    padding: 7px;
-  }
-
-  .client-app-nav-item {
-    height: 46px;
-    font-size: 1.15rem;
-  }
-
-  .client-app-nav-item.is-home {
-    height: 56px;
-  }
-}
-
-/* =========================================================
-   CLIENT PORTAL PROFILE PICTURE STORAGE UI
-   ========================================================= */
-
-.client-app-profile-row {
-  display: grid;
-  grid-template-columns: 68px 1fr;
-  align-items: center;
-  gap: 14px;
-}
-
-.client-app-profile-avatar {
-  display: grid;
-  place-items: center;
-  width: 68px;
-  height: 68px;
-  overflow: hidden;
-  border: 1px solid rgba(0, 229, 255, 0.22);
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.22), transparent 34%),
-    linear-gradient(135deg, rgba(0, 229, 255, 0.22), rgba(181, 108, 255, 0.2));
-  box-shadow: 0 0 28px rgba(0, 229, 255, 0.14);
-}
-
-.client-app-profile-avatar img,
-.client-app-avatar-preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.client-app-profile-avatar span {
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 1000;
-  letter-spacing: 0.08em;
-}
-
-.client-app-avatar-upload {
-  cursor: pointer;
-  transition: border-color 180ms ease, transform 180ms ease, background 180ms ease;
-}
-
-.client-app-avatar-upload:hover {
-  border-color: rgba(0, 229, 255, 0.52);
-  background: rgba(0, 229, 255, 0.085);
-  transform: translateY(-1px);
-}
-
-.client-app-avatar-upload.has-image {
-  min-height: 238px;
-  padding: 16px;
-}
-
-.client-app-avatar-upload.has-image .client-app-avatar-preview {
-  width: 132px;
-  height: 132px;
-  margin-bottom: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 36px;
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24), 0 0 28px rgba(0, 229, 255, 0.14);
-}
-
-.client-app-avatar-upload input:disabled ~ strong,
-.client-app-avatar-upload input:disabled ~ p {
-  opacity: 0.72;
-}
-
-@media (max-width: 420px) {
-  .client-app-profile-row {
-    grid-template-columns: 58px 1fr;
-    gap: 12px;
-  }
-
-  .client-app-profile-avatar {
-    width: 58px;
-    height: 58px;
+  .admin-mobile-nav-item {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
     border-radius: 20px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.055);
+    text-decoration: none;
+    transform: translateZ(0);
   }
 
-  .client-app-avatar-upload.has-image .client-app-avatar-preview {
-    width: 118px;
-    height: 118px;
-    border-radius: 32px;
+  .admin-mobile-nav-item span[aria-hidden="true"] {
+    display: block;
+    font-size: 1.22rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 9px rgba(0, 229, 255, 0.24));
+  }
+
+  .admin-mobile-nav-item.home {
+    min-height: 58px;
+    border-radius: 24px;
+    color: #05000d;
+    background: linear-gradient(135deg, #00e5ff, #ffffff 42%, #b56cff);
+    box-shadow: 0 0 28px rgba(0, 229, 255, 0.28);
+    transform: translateY(-7px);
+  }
+
+  .admin-mobile-nav-item.home span[aria-hidden="true"] {
+    font-size: 1.42rem;
+  }
+
+  .admin-mobile-nav-item.active:not(.home) {
+    border-color: rgba(0, 229, 255, 0.42);
+    background: rgba(0, 229, 255, 0.13);
+  }
+
+  .admin-mobile-nav-item.active.home {
+    box-shadow: 0 0 34px rgba(0, 229, 255, 0.38);
+  }
+
+  .admin-portal-dashboard,
+  .portal-dashboard-page,
+  .portal-page,
+  .admin-app-page {
+    min-height: 100svh;
+    overflow-x: hidden;
+    padding-bottom: 112px !important;
+    background:
+      radial-gradient(circle at 18% 0%, rgba(0, 229, 255, 0.18), transparent 34%),
+      radial-gradient(circle at 95% 22%, rgba(181, 108, 255, 0.2), transparent 38%),
+      linear-gradient(180deg, #05000d 0%, #080017 45%, #020008 100%) !important;
+  }
+
+  .admin-portal-dashboard .portal-sidebar,
+  .portal-sidebar {
+    display: none !important;
+  }
+
+  .portal-dashboard-main,
+  .portal-shell,
+  .admin-app-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 18px 16px 112px !important;
+  }
+
+  .portal-dashboard-header,
+  .portal-header,
+  .admin-app-topbar {
+    position: relative;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    width: 100% !important;
+    margin: 0 0 16px !important;
+    padding: 14px !important;
+    border: 1px solid rgba(0, 229, 255, 0.18) !important;
+    border-radius: 26px !important;
+    background: rgba(255, 255, 255, 0.065) !important;
+    backdrop-filter: blur(18px) !important;
+    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .portal-dashboard-header > div:first-child,
+  .portal-header > div:first-child {
+    min-width: 0 !important;
+  }
+
+  .portal-dashboard-header p,
+  .portal-header p,
+  .admin-app-topbar span {
+    color: rgba(255, 255, 255, 0.72) !important;
+  }
+
+  .portal-dashboard-header h1,
+  .portal-header h1,
+  .admin-app-hero h1 {
+    margin: 0 !important;
+    font-size: clamp(2.25rem, 11vw, 4rem) !important;
+    line-height: 0.9 !important;
+    letter-spacing: -0.07em !important;
+    text-transform: uppercase !important;
+  }
+
+  .portal-header-actions,
+  .portal-dashboard-header .portal-header-actions,
+  .portal-header .portal-header-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 8px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .portal-top-button,
+  .portal-link,
+  .admin-app-topbar a {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 40px !important;
+    padding: 0 13px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 999px !important;
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.075) !important;
+    font-size: 0.76rem !important;
+    font-weight: 900 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+  }
+
+  .portal-top-button.is-home,
+  .portal-header-actions .portal-link[href="/"],
+  .admin-app-topbar a[href="/"] {
+    color: #05000d !important;
+    background: linear-gradient(135deg, #00e5ff, #ffffff 42%, #b56cff) !important;
+  }
+
+  .portal-stat-grid,
+  .admin-stat-grid,
+  .portal-content-grid,
+  .portal-grid,
+  .portal-grid-two,
+  .admin-editor-layout,
+  .project-data-grid,
+  .admin-form-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .portal-stat-card,
+  .portal-dashboard-panel,
+  .portal-card,
+  .client-active-project-card,
+  .portal-update-card,
+  .admin-app-loading-card,
+  .admin-chat-list-panel,
+  .admin-empty-state {
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 28px !important;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.045)),
+      rgba(6, 0, 18, 0.78) !important;
+    box-shadow: 0 20px 54px rgba(0, 0, 0, 0.25), inset 0 0 32px rgba(0, 229, 255, 0.05) !important;
+    backdrop-filter: blur(18px) !important;
+  }
+
+  .portal-stat-card,
+  .portal-dashboard-panel,
+  .portal-card,
+  .admin-app-loading-card,
+  .admin-chat-list-panel,
+  .admin-empty-state {
+    padding: 18px !important;
+  }
+
+  .portal-dashboard-footer {
+    display: none !important;
+  }
+
+  .portal-panel-head,
+  .client-project-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+  }
+
+  .portal-panel-head h2,
+  .portal-card h2,
+  .admin-app-hero h1,
+  .admin-empty-state h2 {
+    color: #fff !important;
+  }
+
+  .portal-list,
+  .admin-client-list,
+  .admin-project-list,
+  .portal-admin-update-list,
+  .portal-tool-list {
+    display: grid !important;
+    gap: 12px !important;
+  }
+
+  .portal-list-item,
+  .admin-client-row,
+  .portal-tool-list a,
+  .admin-list-editor-item {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    align-items: center !important;
+    gap: 12px !important;
+    min-width: 0 !important;
+    padding: 14px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 22px !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #fff !important;
+    text-decoration: none !important;
+  }
+
+  .portal-list-item > div,
+  .admin-client-row > div,
+  .portal-tool-list a > div,
+  .admin-list-editor-item > div {
+    min-width: 0 !important;
+  }
+
+  .portal-list-item p,
+  .admin-client-row p,
+  .portal-tool-list a p,
+  .admin-list-editor-item p,
+  .portal-dashboard-panel p,
+  .portal-card p {
+    overflow-wrap: anywhere !important;
+    color: rgba(255, 255, 255, 0.68) !important;
+  }
+
+  .admin-module-tabs {
+    display: flex !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    padding: 4px 0 14px !important;
+    scrollbar-width: none !important;
+  }
+
+  .admin-module-tabs::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .admin-module-tabs button,
+  .admin-module-tabs a,
+  .blog-admin-actions button,
+  .auth-submit {
+    min-height: 42px !important;
+    border-radius: 999px !important;
+    white-space: nowrap !important;
+  }
+
+  .admin-module-tabs button.active {
+    color: #05000d !important;
+    background: linear-gradient(135deg, #00e5ff, #ffffff 42%, #b56cff) !important;
+  }
+
+  .service-admin-form,
+  .blog-admin-form,
+  .portal-form {
+    display: grid !important;
+    gap: 14px !important;
+  }
+
+  .service-admin-form input,
+  .service-admin-form textarea,
+  .blog-admin-form input,
+  .blog-admin-form textarea,
+  .blog-admin-form select,
+  .portal-form input,
+  .portal-form textarea,
+  .portal-form select,
+  .admin-chat-search input {
+    width: 100% !important;
+    min-height: 48px !important;
+    border-radius: 18px !important;
+    font-size: 16px !important;
+  }
+
+  .service-admin-form textarea,
+  .blog-admin-form textarea,
+  .portal-form textarea {
+    min-height: 130px !important;
+  }
+
+  .admin-list-editor-item {
+    grid-template-columns: 1fr !important;
+  }
+
+  .blog-admin-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .portal-list:has(.admin-list-editor-item) {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .portal-list:has(.admin-list-editor-item) .admin-list-editor-item {
+    min-height: 176px !important;
+    align-content: space-between !important;
+    border-radius: 26px !important;
+  }
+
+  .admin-app-page {
+    color: #fff;
+  }
+
+  .admin-app-topbar {
+    min-height: 58px !important;
+  }
+
+  .admin-app-hero {
+    padding: 18px 0 20px;
+  }
+
+  .admin-app-hero.compact {
+    padding-top: 4px;
+  }
+
+  .admin-app-kicker {
+    display: inline-flex;
+    width: fit-content;
+    margin: 0 0 10px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    color: #79f3ff;
+    background: rgba(0, 229, 255, 0.09);
+    border: 1px solid rgba(0, 229, 255, 0.18);
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .admin-app-hero p:not(.admin-app-kicker) {
+    margin: 10px 0 0;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.55;
+  }
+
+  .admin-chat-search {
+    display: block;
+    margin-bottom: 14px;
+  }
+
+  .admin-imessage-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .admin-imessage-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.065);
+    text-decoration: none;
+  }
+
+  .admin-chat-avatar,
+  .portal-avatar {
+    display: grid !important;
+    place-items: center !important;
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 17px !important;
+    color: #05000d !important;
+    background: linear-gradient(135deg, #00e5ff, #ffffff 42%, #b56cff) !important;
+    font-weight: 950 !important;
+  }
+
+  .admin-chat-copy {
+    min-width: 0;
+  }
+
+  .admin-chat-copy > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .admin-chat-copy h2 {
+    margin: 0;
+    overflow: hidden;
+    font-size: 0.98rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .admin-chat-copy time {
+    flex: 0 0 auto;
+    color: rgba(255, 255, 255, 0.52);
+    font-size: 0.72rem;
+  }
+
+  .admin-chat-copy p {
+    margin: 5px 0 0;
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.84rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .admin-imessage-row > strong,
+  .notification-badge {
+    display: inline-grid !important;
+    place-items: center !important;
+    min-width: 22px !important;
+    height: 22px !important;
+    padding: 0 6px !important;
+    border-radius: 999px !important;
+    color: #05000d !important;
+    background: #79f3ff !important;
+    font-size: 0.72rem !important;
+  }
+
+  .client-project-actions,
+  .portal-card-actions,
+  .service-modal-actions-playground {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .admin-mobile-bottom-nav {
+    left: 10px;
+    right: 10px;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .admin-mobile-nav-item {
+    min-height: 48px;
+    border-radius: 18px;
+  }
+
+  .admin-mobile-nav-item.home {
+    min-height: 56px;
+  }
+
+  .portal-list:has(.admin-list-editor-item) {
+    grid-template-columns: 1fr !important;
   }
 }
