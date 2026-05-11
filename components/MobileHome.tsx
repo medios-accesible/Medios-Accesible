@@ -5,9 +5,6 @@ import { useEffect, useState } from "react";
 import CodeRain from "./CodeRain";
 import { siteContent } from "../data/siteContent";
 
-const mobileLogo =
-  "https://res.cloudinary.com/dovrzmlqj/image/upload/v1778476099/my-company-logo-mobile_dhdlwg.png";
-
 const mobileHero =
   "https://res.cloudinary.com/dovrzmlqj/image/upload/v1778475871/hero-my-site-mobile_dtccoq.png";
 
@@ -94,24 +91,18 @@ export default function MobileHome() {
         <img className="mobile-hero-bg" src={mobileHero} alt="" />
         <CodeRain className="mobile-code-rain" />
 
-        <header className="mobile-topbar">
-          <Link className="mobile-logo-link" href="/" aria-label="Medios Accesible Home">
-            <img src={mobileLogo} alt="Medios Accesible logo" />
-          </Link>
-
-          <button
-            className="mobile-hamburger-btn"
-            type="button"
-            aria-label="Open mobile menu"
-            aria-expanded={menuOpen}
-            aria-controls="mobile-drawer-menu"
-            onClick={() => setMenuOpen(true)}
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-        </header>
+        <button
+          className="mobile-menu-launcher"
+          type="button"
+          aria-label="Open mobile menu"
+          aria-expanded={menuOpen}
+          aria-controls="mobile-drawer-menu"
+          onClick={() => setMenuOpen(true)}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
         <div
           className={`mobile-menu-backdrop ${menuOpen ? "is-open" : ""}`}
@@ -125,7 +116,10 @@ export default function MobileHome() {
           aria-hidden={!menuOpen}
         >
           <div className="mobile-drawer-head">
-            <img src={mobileLogo} alt="Medios Accesible logo" />
+            <Link className="mobile-drawer-brand" href="/" onClick={closeMenu}>
+              <span>MA</span>
+              <strong>Medios Accesible</strong>
+            </Link>
 
             <button type="button" aria-label="Close mobile menu" onClick={closeMenu}>
               ×
@@ -293,7 +287,7 @@ export default function MobileHome() {
       </section>
 
       <footer className="mobile-footer">
-        <img src={mobileLogo} alt="Medios Accesible logo" />
+        <strong className="mobile-footer-brand">Medios Accesible</strong>
         <p>Custom code. Clear systems. Real growth.</p>
         <div>
           <Link href="/services">Services</Link>
