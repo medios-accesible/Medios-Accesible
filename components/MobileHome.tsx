@@ -199,15 +199,14 @@ export default function MobileHome() {
         </Link>
       </section>
 
-      <footer className="mobile-footer">
-        <strong className="mobile-footer-brand">Medios Accesible</strong>
-        <p>Custom code. Clear systems. Real growth.</p>
-        <div>
-          <Link href="/services">Services</Link>
-          <Link href="/portfolio">Portfolio</Link>
-          <Link href="/blog">Blog</Link>
-          <Link href="/contact">Contact</Link>
-        </div>
+      <footer className="mobile-footer mobile-footer-simple">
+        <Link className="mobile-footer-logo-only" href="/" aria-label="Medios Accesible Home">
+          <img src={siteContent.brand.logo} alt="Medios Accesible logo" />
+        </Link>
+
+        <p className="mobile-footer-copyright">
+          © 2021 Medios Accesible. All rights reserved.
+        </p>
       </footer>
     </main>
   );
