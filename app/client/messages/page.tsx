@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import ClientMobileNav from "../../../components/ClientMobileNav";
 import { supabase } from "../../../lib/supabaseClient";
 
 type Profile = {
@@ -33,22 +34,6 @@ type Message = {
   created_at: string;
 };
 
-type ProjectUpdate = {
-  id: string;
-  project_id: string;
-  title: string;
-  summary: string;
-  update_type: string;
-  current_stage: string | null;
-  progress_snapshot: number | null;
-  completed_work: string | null;
-  next_steps: string | null;
-  client_action_needed: string | null;
-  blockers: string | null;
-  estimated_completion: string | null;
-  created_at: string;
-};
-
 type DeveloperPresence = {
   id: string;
   is_logged_in: boolean | null;
@@ -62,17 +47,24 @@ function cleanFileName(fileName: string) {
   return fileName.replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
 }
 
+function formatTime(value: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  }).format(new Date(value));
+}
+
 export default function ClientMessagesPage() {
   const router = useRouter();
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [project, setProject] = useState<Project | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [projectUpdates, setProjectUpdates] = useState<ProjectUpdate[]>([]);
   const [messageBody, setMessageBody] = useState("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [developerAtDesk, setDeveloperAtDesk] = useState(false);
-
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
@@ -140,6 +132,15 @@ export default function ClientMessagesPage() {
 
     setProject(projectData as Project);
     await fetchMessages(projectData.id, userId);
+
+    const { data: presenceData } = await supabase
+      .from("developer_presence")
+      .select("id, is_logged_in, last_seen_at")
+      .eq("id", "main")
+      .maybeSingle();
+
+    const presence = presenceData as DeveloperPresence | null;
+    setDeveloperAtDesk(Boolean(presence?.is_logged_in));
     setLoading(false);
   }
 
@@ -177,12 +178,10 @@ export default function ClientMessagesPage() {
     const safeName = cleanFileName(file.name);
     const filePath = `${projectId}/${senderId}/${Date.now()}-${safeName}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from(CHAT_BUCKET)
-      .upload(filePath, file, {
-        cacheControl: "3600",
-        upsert: false
-      });
+    const { error: uploadError } = await supabase.storage.from(CHAT_BUCKET).upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false
+    });
 
     if (uploadError) {
       throw uploadError;
@@ -254,8 +253,8 @@ export default function ClientMessagesPage() {
 
   if (loading) {
     return (
-      <main className="portal-page">
-        <section className="portal-card">
+      <main className="client-app-page">
+        <section className="client-app-loading-card">
           <p>Loading messages...</p>
         </section>
       </main>
@@ -263,205 +262,98 @@ export default function ClientMessagesPage() {
   }
 
   return (
-    <main className="portal-page">
-      <section className="portal-shell">
-        <header className="portal-header">
+    <main className="client-app-page client-app-messages-page">
+      <section className="client-app-shell client-app-chat-shell">
+        <header className="client-app-page-header">
           <div>
-            <p className="portal-kicker">Client Messages</p>
-            <h1>Messages</h1>
-            <p>{profile?.email}</p>
+            <p className="client-app-kicker">Messages</p>
+            <h1>Project Chat</h1>
+            <p>{project ? `${project.title} · ${project.progress}%` : profile?.email}</p>
           </div>
 
-          <div className="portal-header-actions">
-            <Link className="portal-link" href="/">
-              Home
-            </Link>
-
-            <Link className="portal-link" href="/client">
-              ← Client
-            </Link>
-          </div>
+          <Link href="/client" aria-label="Back to portal home">
+            ⌂
+          </Link>
         </header>
 
-        <article className="portal-card">
+        <div className={`client-app-presence-card ${developerAtDesk ? "is-online" : "is-away"}`}>
+          <span></span>
+          <p>{developerAtDesk ? "Developer is currently online." : "Developer is away. Messages are still saved here."}</p>
+        </div>
+
+        <article className="client-app-chat-card">
           {!project ? (
             <p>No project has been assigned yet. Messaging will activate after your project is created.</p>
           ) : (
-            <>
-              <h2>{project.title}</h2>
-              <p>
-                {project.stage} · {project.status} · {project.progress}%
-              </p>
+            <div className="client-app-message-thread">
+              {messages.length === 0 ? (
+                <p className="client-app-empty-state">No messages yet. Start the conversation below.</p>
+              ) : (
+                messages.map((message) => {
+                  const isClient = message.sender_id === profile?.id;
 
-              <div className={`developer-status-inline ${developerAtDesk ? "is-online" : "is-away"}`}>
-                <span className="developer-status-dot"></span>
-
-                <div>
-                  <p>
-                    {developerAtDesk
-                      ? "Developer is currently at his desk. Message me here in the client portal."
-                      : "Developer is currently away from his desk. Please call or send email for a timely response."}
-                  </p>
-
-                  {!developerAtDesk && (
-                    <div className="developer-status-actions">
-                      <a href="tel:+17879074302">Call (787) 907-4302</a>
-                      <a href="mailto:mediosaccesible@gmail.com">Send Email</a>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="client-project-updates-panel">
-                <h3>Detailed Project Updates</h3>
-
-                {projectUpdates.length === 0 ? (
-                  <p>No detailed project updates have been posted yet.</p>
-                ) : (
-                  <div className="project-updates-list">
-                    {projectUpdates.map((update) => (
-                      <div className="project-update-item" key={update.id}>
-                        <div className="project-update-meta">
-                          <span>{update.update_type}</span>
-                          <time>{new Date(update.created_at).toLocaleDateString()}</time>
-                        </div>
-
-                        <h3>{update.title}</h3>
-                        <p>{update.summary}</p>
-
-                        {update.completed_work && (
-                          <div className="project-update-detail">
-                            <strong>Completed:</strong>
-                            <p>{update.completed_work}</p>
-                          </div>
-                        )}
-
-                        {update.next_steps && (
-                          <div className="project-update-detail">
-                            <strong>Next:</strong>
-                            <p>{update.next_steps}</p>
-                          </div>
-                        )}
-
-                        {update.client_action_needed && (
-                          <div className="project-update-detail highlight">
-                            <strong>Action needed from you:</strong>
-                            <p>{update.client_action_needed}</p>
-                          </div>
-                        )}
-
-                        {update.blockers && (
-                          <div className="project-update-detail warning">
-                            <strong>Blockers:</strong>
-                            <p>{update.blockers}</p>
-                          </div>
-                        )}
-
-                        {update.estimated_completion && (
-                          <div className="project-update-detail">
-                            <strong>Timing:</strong>
-                            <p>{update.estimated_completion}</p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="message-thread">
-                {messages.length === 0 ? (
-                  <p>No messages yet.</p>
-                ) : (
-                  messages.map((message) => {
-                    const isClient = message.sender_id === profile?.id;
-
-                    return (
-                      <div
-                        className={`message-bubble ${
-                          isClient ? "client-message" : "admin-message"
-                        }`}
-                        key={message.id}
-                      >
-                        <span>{isClient ? "You" : "Medios Accesible"}</span>
-
-                        {message.body && <p>{message.body}</p>}
-
-                        {message.attachment_url && message.attachment_type?.startsWith("image/") && (
-                          <a
-                            href={message.attachment_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="message-attachment-link"
-                          >
-                            <img
-                              className="message-attachment"
-                              src={message.attachment_url}
-                              alt={message.attachment_name || "Chat attachment"}
-                            />
-                          </a>
-                        )}
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-
-              <form className="message-form imessage-form" onSubmit={sendMessage}>
-                <div className="imessage-composer">
-                  <label className="imessage-photo-button" aria-label="Attach image">
-                    <input
-                      id="client-chat-image"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                    />
-
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M4 7h3l1.4-2h7.2L17 7h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"></path>
-                      <circle cx="12" cy="13" r="4"></circle>
-                    </svg>
-                  </label>
-
-                  <textarea
-                    className="imessage-textarea"
-                    value={messageBody}
-                    onChange={(event) => setMessageBody(event.target.value)}
-                    placeholder="Message..."
-                    rows={1}
-                  />
-
-                  <button
-                    className="imessage-send-button"
-                    type="submit"
-                    disabled={sending}
-                    aria-label="Send message"
-                  >
-                    {sending ? "…" : "↑"}
-                  </button>
-                </div>
-
-                {selectedImage && (
-                  <div className="imessage-file-chip">
-                    <span>{selectedImage.name}</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedImage(null);
-                        const fileInput = document.getElementById("client-chat-image") as HTMLInputElement | null;
-                        if (fileInput) fileInput.value = "";
-                      }}
-                      aria-label="Remove selected image"
+                  return (
+                    <div
+                      className={`client-app-message-bubble ${isClient ? "is-client" : "is-admin"}`}
+                      key={message.id}
                     >
-                      ×
-                    </button>
-                  </div>
-                )}
-              </form>
-            </>
+                      <span>{isClient ? "You" : "Medios Accesible"}</span>
+
+                      {message.body && <p>{message.body}</p>}
+
+                      {message.attachment_url && message.attachment_type?.startsWith("image/") && (
+                        <a href={message.attachment_url} target="_blank" rel="noreferrer">
+                          <img src={message.attachment_url} alt={message.attachment_name || "Chat attachment"} />
+                        </a>
+                      )}
+
+                      <time>{formatTime(message.created_at)}</time>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           )}
         </article>
+
+        {project && (
+          <form className="client-app-composer" onSubmit={sendMessage}>
+            <label className="client-app-photo-button" aria-label="Attach image">
+              <input id="client-chat-image" type="file" accept="image/*" onChange={handleImageChange} />
+              <span aria-hidden="true">＋</span>
+            </label>
+
+            <textarea
+              value={messageBody}
+              onChange={(event) => setMessageBody(event.target.value)}
+              placeholder="Message..."
+              rows={1}
+            />
+
+            <button type="submit" disabled={sending} aria-label="Send message">
+              {sending ? "…" : "↑"}
+            </button>
+          </form>
+        )}
+
+        {selectedImage && (
+          <div className="client-app-file-chip">
+            <span>{selectedImage.name}</span>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedImage(null);
+                const fileInput = document.getElementById("client-chat-image") as HTMLInputElement | null;
+                if (fileInput) fileInput.value = "";
+              }}
+            >
+              ×
+            </button>
+          </div>
+        )}
       </section>
+
+      <ClientMobileNav />
     </main>
   );
 }
