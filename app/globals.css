@@ -8320,24 +8320,6 @@ textarea:focus {
 }
 
 @media (max-width: 768px) {
-  .services-playground-page .code-build-card:not(.code-built) > *:not(.code-build-overlay):not(.code-build-border):not(.tile-aurora) {
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-  }
-
-  .services-playground-page .code-build-card:not(.code-built) .code-build-overlay {
-    opacity: 0 !important;
-    transform: none !important;
-    filter: none !important;
-  }
-
-  .services-playground-page .code-build-card:not(.code-built) .code-build-border::before,
-  .services-playground-page .code-build-card:not(.code-built) .code-build-border::after {
-    opacity: 0 !important;
-    animation: none !important;
-  }
-
   .services-footer-playground.services-footer-simple {
     width: calc(100% - 32px) !important;
     padding: 46px 0 58px !important;
