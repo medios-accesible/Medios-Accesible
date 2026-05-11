@@ -8,7 +8,6 @@ type Mode = "login" | "signup";
 
 export default function LoginPage() {
   const router = useRouter();
-
   const [mode, setMode] = useState<Mode>("login");
   const [fullName, setFullName] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -43,6 +42,31 @@ export default function LoginPage() {
 
   useEffect(() => {
     async function checkExistingSession() {
+      const params = new URLSearchParams(window.location.search);
+      const confirmed = params.get("confirmed") === "true";
+      const reset = params.get("reset") === "success";
+      const authError = params.get("authError");
+
+      if (authError) {
+        setError(decodeURIComponent(authError));
+        setCheckingSession(false);
+        return;
+      }
+
+      if (confirmed) {
+        await supabase.auth.signOut();
+        setMessage("Email confirmed. You can now sign in to your portal.");
+        setCheckingSession(false);
+        return;
+      }
+
+      if (reset) {
+        await supabase.auth.signOut();
+        setMessage("Password updated. Sign in with your new password.");
+        setCheckingSession(false);
+        return;
+      }
+
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData.session?.user;
 
@@ -67,10 +91,13 @@ export default function LoginPage() {
 
     try {
       if (mode === "signup") {
+        const emailRedirectTo = `${window.location.origin}/login?confirmed=true`;
+
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
+            emailRedirectTo,
             data: {
               full_name: fullName,
               company_name: companyName
@@ -93,7 +120,7 @@ export default function LoginPage() {
             .eq("id", data.user.id);
         }
 
-        setMessage("Account created. You can now sign in.");
+        setMessage("Account created. Check your email to confirm your account, then sign in.");
         setMode("login");
         setPassword("");
         return;
